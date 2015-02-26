@@ -1,0 +1,51 @@
+Options +FollowSymlinks
+RewriteEngine On
+
+########## Begin - Rewrite rules to block out some common exploits
+## If you experience problems on your site block out the operations listed below
+## This attempts to block the most common type of exploit `attempts` to Joomla!
+#
+# Block out any script trying to base64_encode crap to send via URL
+RewriteCond %{QUERY_STRING} base64_encode.*\(.*\) [OR]
+# Block out any script that includes a <script> tag in URL
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+# Block out any script trying to set a PHP GLOBALS variable via URL
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+# Block out any script trying to modify a _REQUEST variable via URL
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+# Send all blocked request to homepage with 403 Forbidden error!
+RewriteRule ^(.*)$ index.php [F,L]
+#
+########## End - Rewrite rules to block out some common exploits
+
+#go from a non subdomain to a www
+RewriteCond %{HTTP_HOST} !\..*\. [NC]
+	RewriteRule ^ http://www.%{HTTP_HOST}%{REQUEST_URI} [NC,L,R=301]
+
+RewriteCond %{HTTP_HOST} www\.(.*\..*\..*) [NC]
+	RewriteRule ^(.*)$ http://%1/$1 [L]
+
+#RewriteCond %{HTTP_HOST}	!wyska.net				[NC]
+#	RewriteRule ^(.*) http://www.wyska.net%{REQUEST_URI}?&domain=%{HTTP_HOST} [R=permanent,L]
+
+#and this is the good stuff
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^index.php
+	RewriteRule (.*) index.php/$1 [L]
+#	RewriteRule (.*) index.php
+
+#so I need the next line?
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+
+
+###############################################
+#turning off safe_mode
+php_flag safe_mode off
+#turning off register globals
+php_flag register_globals off
+Order allow,deny
+Allow from all
+#turning on gzip compression - it doesn't work !!!
+#php_flag zlib.output_compression on
+###############################################

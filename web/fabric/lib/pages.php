@@ -13,13 +13,13 @@ class pages extends table_prototype {
 		$lib = ll('table_prototype');
 		switch($type){
 			case'product':
-				$lib->set_table_name($type.'_pages');
+				$lib->set_table_name($type.'_page');
 				$field	 = $type.'_id';
 				break;
 			case'category':
 			default:
 				$field	 = 'category_id';
-				$lib->set_table_name('category_pages');
+				$lib->set_table_name('category_page');
 		}
 		$filters	 = array();
 		$filters[]	 = array('field' => $field, 'operator' => '=', 'value' => $id);
@@ -40,8 +40,24 @@ class pages extends table_prototype {
 		return $return;
 	}
 	public function prep_content($content){
-		$prepped = '';
-		
+		$matches = array();
+		preg_match('/\[\[\[(.+?):(.+?)\]\]\]/', $content, $matches);
+		$from	 = array();
+		$to		 = array();
+		foreach($matches[1] as $k => $match){
+			$from[] = $matches[0][$k];
+			switch($match){
+				case'image':
+				case'product':
+				case'catgory':
+					$converted = ll('images')->get_image($matches[2][$k], $match);
+					break;
+				default:
+					break;
+			}
+			$to[] = $converted;
+		}
+		$prepped = str_replace($from, $to, $content);
 		return $prepped;
 	}
 }

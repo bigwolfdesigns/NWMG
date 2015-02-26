@@ -41,7 +41,6 @@ class category {
 				}
 				//content_pages
 				$pages = ll('categories')->get_pages($cat_id);
-				var_dump($pages );
 				foreach($pages as $page){
 					//prep ecom page to be displayed
 					$content = $page['content'];

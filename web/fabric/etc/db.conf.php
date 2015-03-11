@@ -6,9 +6,9 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
   | database access
   | -------------------------------------------------------------------------
  */
-$db['appname']				 = 'Networks Marketing Group';
-$db['driver']				 = 'mysql';
-$db['read']					 = array();
+$db['appname']	 = 'Networks Marketing Group';
+$db['driver']	 = 'mysql';
+$db['read']		 = array();
 //$i							 = 0;
 //$db['read'][$i]['name']		 = 'localhost';
 //$db['read'][$i]['server']	 = 'localhost'; //127.0.0.1
@@ -19,9 +19,13 @@ $db['read']					 = array();
 $db['persistent']	 = false;
 $db['server']		 = 'localhost';
 switch(strtolower(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'')){
+	case'www.maxsondoors.com':
+	case'maxsondoors.com':
+		$db['database']	 = 'networks_maxsondoors';
+		break;
+	case '': //scripts
 	case 'kirkcocorp':
 	case 'kirkcocorp.bigwolfdesigns.com':
-	case '': //scripts
 	default:
 		$db['database']	 = 'networks_kirkcocorp';
 }

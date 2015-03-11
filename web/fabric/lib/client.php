@@ -4,9 +4,10 @@ if(!defined('BASEPATH')){
 	exit('No direct script access allowed');
 }
 
-class client extends table_prototype {
+class client extends table_prototype{
 	private $config;
-	private $privileges = array();
+	private $privileges	 = array();
+	private $info		 = array();
 	public function __construct(){
 		//IMPORTANT !!! KEEP SESSION BEFORE PARENT CONSTRUCT
 		//SESSIONS NEEDS TO BE INITIALIZED BEFORE DATABASE CONNECTION
@@ -26,7 +27,7 @@ class client extends table_prototype {
 	private function _fill_client_info($force_subsite_id = 0, $force_subsite_alias = ''){
 		$force_create_config = $this->reset_info;
 		$this->reset_info	 = false;
-		if(empty($this->info) || !is_array($this->info)){
+		if(empty($this->info)||!is_array($this->info)){
 			$sess_settings					 = ll('sessions')->get('_settings');
 			$host							 = lc('uri')->get_host();
 			$cfg							 = array();
@@ -44,10 +45,11 @@ class client extends table_prototype {
 					}
 				}
 			}
-			if(!isset($cfg['template']) || $cfg['template'] == ''){
+			if(!isset($cfg['template'])||$cfg['template']==''){
 				$cfg['template'] = 'default';
 			}
-			if(isset($this->config['control_classes'][lc('uri')->get(CLASS_KEY, 'home')])){
+			$t_task = lc('uri')->get(TASK_KEY, 'all');
+			if(isset($this->config['control_classes'][lc('uri')->get(CLASS_KEY, 'home')][$t_task])||isset($this->config['control_classes'][lc('uri')->get(CLASS_KEY, 'home')]['all'])){
 				$cfg['template'] = 'control';
 			}
 			$cfg['folder_template']		 = TPLPATH.$cfg['template'].'/';
@@ -56,11 +58,11 @@ class client extends table_prototype {
 			$this->_parse_config();
 		}
 		$_domain = $host;
-		if(substr_count($_domain, '.') > 1){
+		if(substr_count($_domain, '.')>1){
 			$_domain = substr($_domain, strpos($_domain, '.'));
 		}
 		$sess_settings['domain'] = $_domain;
-		if(ini_get('session.use_cookies') == 1){
+		if(ini_get('session.use_cookies')==1){
 			//no cookies.. no need to store anything in the session as it will be "forgot: it anyway
 			ll('sessions')->set('_settings', $sess_settings);
 		}
@@ -70,7 +72,7 @@ class client extends table_prototype {
 		$display	 = ll('display');
 		$ll_client	 = ll('client');
 		$template	 = $this->get('template', 'default');
-		if($this->initial_set != true){
+		if($this->initial_set!=true){
 			//unify all the CSS and JS
 			$uri		 = lc('uri');
 			$old_task	 = $uri->get(TASK_KEY, NULL);
@@ -78,7 +80,7 @@ class client extends table_prototype {
 			//CSS
 			$links		 = $display->get_config('link');
 			$scripts	 = $display->get_config('script');
-			if($template == 'control'){
+			if($template=='control'){
 				//add control style and js
 				$new			 = array();
 				$new['type']	 = 'text/css';
@@ -118,21 +120,21 @@ class client extends table_prototype {
 			//a few things we want to do only once
 			$display->set_template($template);
 			$display->set_fail_over_template('default');
-			$display->assign('title', '');
+			$display->assign('title', $this->get('name', ''));
 			$ext_file = 'default';
-			if($ext_file != '' && (ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css') || ll('files')->file_exists(TPLPATH.'default/css/'.$ext_file.'.css'))){
+			if($ext_file!=''&&(ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css')||ll('files')->file_exists(TPLPATH.'default/css/'.$ext_file.'.css'))){
 				$display->add_link('text/css', 'stylesheet', 'default', '/css/'.$ext_file.'.css', 'all');
 			}
-			if($ext_file != '' && (ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js') || ll('files')->file_exists(TPLPATH.'default/js/'.$ext_file.'.js'))){
+			if($ext_file!=''&&(ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js')||ll('files')->file_exists(TPLPATH.'default/js/'.$ext_file.'.js'))){
 				$display->add_script('text/javascript', 'javascript', '/js/'.$ext_file.'.js');
 			}
 			//if this is not the default template, check for any CSS or JS to append
 			$ext_file = 'append_default';
-			if($template != 'default'){
-				if($ext_file != '' && ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css')){
+			if($template!='default'){
+				if($ext_file!=''&&ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css')){
 					$display->add_link('text/css', 'stylesheet', 'default', '/css/'.$ext_file.'.css', 'all');
 				}
-				if($ext_file != '' && ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js')){
+				if($ext_file!=''&&ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js')){
 					$display->add_script('text/javascript', 'javascript', '/js/'.$ext_file.'.js');
 				}
 			}
@@ -144,20 +146,20 @@ class client extends table_prototype {
 //			$display->assign('logo_file', $logo_file);
 		}
 		$ext_file = lc('uri')->get(CLASS_KEY, '');
-		if($ext_file != ''){
-			if($ext_file != '' && (ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css') || ll('files')->file_exists(TPLPATH.'default/css/'.$ext_file.'.css'))){
+		if($ext_file!=''){
+			if($ext_file!=''&&(ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css')||ll('files')->file_exists(TPLPATH.'default/css/'.$ext_file.'.css'))){
 				$display->add_link('text/css', 'stylesheet', 'default', '/css/'.$ext_file.'.css', 'all');
 			}
-			if($ext_file != '' && (ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js') || ll('files')->file_exists(TPLPATH.'default/js/'.$ext_file.'.js'))){
+			if($ext_file!=''&&(ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js')||ll('files')->file_exists(TPLPATH.'default/js/'.$ext_file.'.js'))){
 				$display->add_script('text/javascript', 'javascript', '/js/'.$ext_file.'.js');
 			}
 			//if this is not the default template, check for any CSS or JS to append
-			if($template != 'default'){
+			if($template!='default'){
 				$ext_file = 'append_'.$ext_file;
-				if($ext_file != '' && ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css')){
+				if($ext_file!=''&&ll('files')->file_exists(TPLPATH.$template.'/css/'.$ext_file.'.css')){
 					$display->add_link('text/css', 'stylesheet', 'default', '/css/'.$ext_file.'.css', 'all');
 				}
-				if($ext_file != '' && ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js')){
+				if($ext_file!=''&&ll('files')->file_exists(TPLPATH.$template.'/js/'.$ext_file.'.js')){
 					$display->add_script('text/javascript', 'javascript', '/js/'.$ext_file.'.js');
 				}
 			}
@@ -180,7 +182,7 @@ class client extends table_prototype {
 	public function show_nav_menu(){
 		//get all categories for left nav
 		$categories	 = ll('categories')->get_nav_categories();
-		$return		 = ll('display')->grab('left_nav',array('categories'=>$categories));
+		$return		 = ll('display')->grab('left_nav', array('categories' => $categories));
 		return $return;
 	}
 	public function show_footer_links(){
@@ -212,13 +214,13 @@ class client extends table_prototype {
 		$nav_opts['banner_image']	 = $banner_img;
 		$nav_opts['footer_links']	 = $footer_links;
 		$return						 = $nav_opts;
-		if($var != 'all' && isset($return[$var])){
+		if($var!='all'&&isset($return[$var])){
 			$return = $return[$var];
 		}
 		return $return;
 	}
 	private static function _sort_top_menus($a, $b){
-		return $a['sort'] - $b['sort'];
+		return $a['sort']-$b['sort'];
 	}
 	public function show_control_nav(){
 		$permissions = array(
@@ -238,15 +240,15 @@ class client extends table_prototype {
 		if(lc('uri')->is_post()){
 			//do the dirty work
 			$top_menu_navs = json_decode(lc('uri')->post('top_menu_json', '[]'), true);
-			if(is_array($top_menu_navs) && !empty($top_menu_navs)){
+			if(is_array($top_menu_navs)&&!empty($top_menu_navs)){
 				//get the original_top_menu_navs
 				$original_top_menu_navs = $this->get('top_menu', array());
-				if(is_array($original_top_menu_navs) && count($original_top_menu_navs) > 0){
-					//Basically what's happening here is we're changing the sort ordfer on all existing 
+				if(is_array($original_top_menu_navs)&&count($original_top_menu_navs)>0){
+					//Basically what's happening here is we're changing the sort ordfer on all existing
 					//top menu links by updating what's given back to us in the post.
 					usort($original_top_menu_navs, array('client', '_sort_top_menus'));
 					foreach($top_menu_navs as $k => $sort_order){
-						$original_top_menu_navs[$sort_order - 1]['sort'] = $k + 1;
+						$original_top_menu_navs[$sort_order-1]['sort'] = $k+1;
 					}
 					usort($original_top_menu_navs, array('client', '_sort_top_menus'));
 					$update_top_menu = json_encode($original_top_menu_navs);
@@ -262,7 +264,7 @@ class client extends table_prototype {
 			if(!is_null($top_menu_nav_edits)){
 				$top_menu_nav_edits_decoded = json_decode($top_menu_nav_edits, true);
 				foreach(array_keys($top_menu_nav_edits_decoded) as $k){
-					$top_menu_nav_edits_decoded[$k]['sort'] = ($k + 1);
+					$top_menu_nav_edits_decoded[$k]['sort'] = ($k+1);
 				}
 				$filters	 = array();
 				$filters[]	 = array('field' => 'field', 'operator' => '=', 'value' => 'top_menu');
@@ -273,7 +275,7 @@ class client extends table_prototype {
 		}
 	}
 	public function get($field = '', $default = NULL){
-		if($field == '' || is_array($field)){
+		if($field==''||is_array($field)){
 			$return = $this->info;
 		}else{
 			$return = isset($this->info[$field])?$this->info[$field]:$default;
@@ -290,6 +292,43 @@ class client extends table_prototype {
 		}
 	}
 	public function is_privileged($client_privilege){
-		return (isset($this->privileges[$client_privilege]) && $this->privileges[$client_privilege])?true:false;
+		return (isset($this->privileges[$client_privilege])&&$this->privileges[$client_privilege])?true:false;
+	}
+	public function get_states(){
+		$states	 = ll('table_prototype')->get_raw(array(), array(), array(), '', 'state');
+		$return	 = array();
+		foreach($states as $state){
+			$return [$state['id']] = $state;
+		}
+		return $return;
+	}
+	public function get_countries(){
+		$countries	 = ll('table_prototype')->get_raw(array(), array(), array(), '', 'country');
+		$return		 = array();
+		foreach($countries as $country){
+			$return [$country['id']] = $country;
+		}
+		return $return;
+	}
+	public function coming_soon(){
+		$return = false;
+		if(lc('uri')->is_post()){
+			$email	 = trim(lc('uri')->post('email', NULL));
+			$return	 = "You must submit an email to be notified....";
+			if($email!=''){
+				$return = "We're sorry that doesn't seem to be a valid email...";
+				if(ll('verification')->email($email)){
+					ll('email')->AddAddress(ll('client')->get('contact_email', ll('client')->get('smtp_user')));
+					ll('email')->Subject = "A customer has requested you to stay in contact with them, from your website.";
+					ll('email')->MsgHTML("The customer email address is $email.");
+					if(ll('email')->Send()){
+						$return = "We will be sure to keep in contact with you via this email <strong>$email!</strong>";
+					}else{
+						$return = "We're sorry something went wrong.. Please try again...";
+					}
+				}
+			}
+		}
+		return $return;
 	}
 }

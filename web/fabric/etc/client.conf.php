@@ -2,5 +2,13 @@
 
 $client						 = array();
 $client['control_classes']	 = array(
-	'navigation' => true
+	'navigation' => array(
+		'all' => true
+	),
+	'product' => array(
+		'manage' => true
+	),
+	'category' => array(
+		'manage' => true
+	)
 );

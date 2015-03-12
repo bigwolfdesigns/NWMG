@@ -10,9 +10,14 @@ class failover {
 		$tmps	 = @parse_url(lc('uri')->get_uri());
 		$path	 = isset($tmps['path'])?$tmps['path']:'/';
 		$tmps	 = explode('/', $path);
-		$tmp	 = array_pop($tmps);
+		krsort($tmps);
+		foreach($tmps as $tmp){
+			if($tmp != ''){
+				break;
+			}
+		}
 		if(trim($tmp) != ''){
-			$tmp		 = substr($tmp, 0, strpos($tmp, "."));
+			$tmp		 = (strpos($tmp, ".") !== false)?substr($tmp, 0, strpos($tmp, ".")):$tmp;
 			$this->code	 = $tmp;
 		}
 		return $this;
@@ -35,7 +40,18 @@ class failover {
 		return $this->code;
 	}
 	private function is_product(){
-		return false;
+		$return		 = false;
+		$filters	 = array();
+		$filters[]	 = array('name' => 'alias', 'operator' => 'LIKE', 'value' => $this->code);
+		$filters[]	 = array('name' => 'active', 'operator' => '=', 'value' => 'y');
+		$tmps		 = ll('products')->get_info($filters);
+		if(is_array($tmps) && isset($tmps['id'])){
+			$return			 = true;
+			$this->class_key = 'product';
+			$this->task_key	 = 'view';
+			lc('uri')->set('product', $tmps['alias']);
+		}
+		return $return;
 	}
 	private function is_category(){
 		$return		 = false;

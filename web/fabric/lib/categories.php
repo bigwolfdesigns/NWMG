@@ -33,6 +33,13 @@ class categories extends table_prototype {
 		if(!is_array($sub_categories)){
 			$sub_categories = array();
 		}
+		foreach($sub_categories as $k => $sub_category){
+			//get the main image
+			$sub_cat_id							 = $sub_category['id'];
+			$sub_categories[$k]['url']			 =  $this->get_url($sub_cat_id);
+			$sub_categories[$k]['description']	 = ll('pages')->prep_content($sub_category['description']);
+			$sub_categories[$k]['image']		 = ll('categories')->get_image($sub_cat_id);
+		}
 		return $sub_categories;
 	}
 	public function get_id_from_alias($alias){
@@ -46,9 +53,59 @@ class categories extends table_prototype {
 		return $return;
 	}
 	public function get_image($cat_id){
-		return ll('images')->get_image($cat_id,'category');
+		return ll('images')->get_image($cat_id, 'category');
 	}
 	public function get_pages($cat_id){
-		return ll('pages')->get_pages($cat_id,'category');
+		$pages = ll('pages')->get_pages($cat_id, 'category');
+		foreach($pages as $k=>$page){
+			$pages[$k]['content'] = ll('pages')->prep_content($page['content']);
+		}
+		return $pages;
+	}
+	public function get_breadcrumbs($cat_id, $bread_crumbs = array()){
+		if($cat_id > 0){
+			$category_info = ll('categories')->get_info($cat_id);
+			//we have to form the array backwards and then reverse it
+			if(empty($bread_crumbs)){
+				$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
+			}else{
+				$parent_alias = $category_info['alias'];
+				foreach($bread_crumbs as $k => $bread_crumb){
+					$bread_crumbs[$k]['url'] = '/'.$parent_alias.$bread_crumb['url'];
+				}
+				$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
+			}
+			while(isset($category_info['parent_id']) && $category_info['parent_id'] > 0){
+				$category_info	 = ll('categories')->get_info($category_info['parent_id']);
+				$parent_alias	 = $category_info['alias'];
+				foreach($bread_crumbs as $k => $bread_crumb){
+					$bread_crumbs[$k]['url'] = '/'.$parent_alias.$bread_crumb['url'];
+				}
+				$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
+			}
+		}
+		$bread_crumbs[] = array('name' => 'Home', 'url' => '/home.html');
+		krsort($bread_crumbs);
+		return $bread_crumbs;
+	}
+	public function get_home_categories(){
+		$filters	 = array();
+		$filters[]	 = array('field' => 'home', 'operator' => '=', 'value' => 'y');
+		$categories	 = $this->get_raw($filters);
+		if(!is_array($categories)){
+			$categories = array();
+		}
+		foreach($categories as $k => $category){
+			$cat_id								 = $category['id'];
+			$categories[$k]['url']				 = $this->get_url($cat_id);
+			$categories[$k]['sub_categories']	 = ll('categories')->get_sub_categories($cat_id);
+			$categories[$k]['image']			 = ll('categories')->get_image($cat_id);
+		}
+		return $categories;
+	}
+	public function get_url($cat_id){
+		$breadcrumbs				 = $this->get_breadcrumbs($cat_id);
+		$product_bread_crumb_info	 = array_pop($breadcrumbs);
+		return $product_bread_crumb_info['url'];
 	}
 }

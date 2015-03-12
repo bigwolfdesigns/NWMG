@@ -146,8 +146,8 @@ require_once SBINPATH.'fabric'.EXT;
 lc('fabric');
 ll('sessions')->start();
 fabric::autoload();
-
-if(!lc(lc('uri')->get(CLASS_KEY, STARTUP))){
+$class_key = str_replace('-','_',lc('uri')->get(CLASS_KEY, STARTUP));
+if(!lc($class_key)){
 	lc('uri')->set(CLASS_KEY, STARTUP);
 	lc(STARTUP);
 }

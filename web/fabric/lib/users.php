@@ -89,12 +89,12 @@ class users extends table_prototype {
 		$groups	 = implode(',', $group_tmp);
 		$fields	 = array('privilege.name');
 		$join	 = array();
-		$join[]	 = ['table' => 'user_privilege', 'how' => "user_privilege.user_id = $user_id"];
+		$join[]	 = array('table' => 'user_privilege', 'how' => "user_privilege.user_id = $user_id");
 		if($groups !== ''){
-			$join[]	 = ['table' => 'group_privilege', 'how' => "group_privilege.group_id IN($groups)"];
-			$join[]	 = ['table' => 'privilege', 'how' => "group_privilege.privilege_id"];
+			$join[]	 = array('table' => 'group_privilege', 'how' => "group_privilege.group_id IN($groups)");
+			$join[]	 = array('table' => 'privilege', 'how' => "group_privilege.privilege_id");
 		}
-		$join[]	 = ['table' => 'privilege', 'how' => "user_privilege.privilege_id"];
+//		$join[]	 = array('table' => 'privilege', 'how' => "user_privilege.privilege_id");
 		$privs	 = $this->get_raw(array(), array(), array(), '', 'privilege', $join, $fields);
 		return $privs;
 		"SELECT 
@@ -113,5 +113,8 @@ class users extends table_prototype {
 			$return = isset($this->privileges[$privilege])?true:false;
 		}
 		return $return;
+	}
+	public function is_logged(){
+		return true;
 	}
 }

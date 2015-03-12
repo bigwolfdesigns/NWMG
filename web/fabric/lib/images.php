@@ -12,10 +12,13 @@ class images extends table_prototype {
 	public function get_image($id, $type = 'product'){
 		$return				 = '/images/no-image.png';
 		$lib				 = ll('table_prototype');
+		$field				 = 'id';
 		$skip_initial_query	 = false;
 		switch($type){
 			case'category':
 			case'product':
+			case'component':
+			case'part':
 				$lib->set_table_name($type.'_image');
 				$field				 = $type.'_id';
 				break;

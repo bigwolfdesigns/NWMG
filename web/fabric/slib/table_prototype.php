@@ -4,7 +4,7 @@ if(!defined('BASEPATH')) exit('No direct script access allowed');
 
 // ------------------------------------------------------------------------
 
-class table_prototype{
+class table_prototype {
 	protected $last_result				 = false;
 	protected $current					 = array();
 	protected $dodb						 = array();
@@ -115,9 +115,9 @@ class table_prototype{
 			}
 			if(isset($join['table']) && isset($join['how'])){
 				if(!isset($join['direction'])) $join['direction']		 = 'left';
-				$this->dodb['join'][]	 = array('table'=>$join['table'], 'how'=>$join['how'], 'direction'=>$join['direction']);
+				$this->dodb['join'][]	 = array('table' => $join['table'], 'how' => $join['how'], 'direction' => $join['direction']);
 			} else{
-				foreach($join as $k=> $v){
+				foreach($join as $k => $v){
 					$this->qjoin($v);
 				}
 			}
@@ -138,7 +138,7 @@ class table_prototype{
 	public function set($field, $value = NULL, $SQL_value = false){
 		//use $SQL_value=true if this is a SQL function
 		if(is_array($field)){
-			foreach($field as $k=> $v){
+			foreach($field as $k => $v){
 				$this->set($k, $v);
 			}
 		}else{
@@ -234,7 +234,7 @@ class table_prototype{
 			}elseif($this->dodb['what'] == 'DELETE'){
 				$qry .= $nl.'FROM ';
 			}elseif($this->dodb['what'] == 'UPDATE'){
-
+				
 			}
 			if($this->dodb['ttable'] != ''){
 				$qry .= ' `'.$this->dodb['ttable'].'` ';
@@ -263,7 +263,7 @@ class table_prototype{
 			}
 			if($this->dodb['what'] == 'UPDATE' || substr($this->dodb['what'], 0, 6) == 'INSERT' || substr($this->dodb['what'], 0, 7) == 'REPLACE'){
 				$aqry = array();
-				foreach($this->dodb['set'] as $field=> $value){
+				foreach($this->dodb['set'] as $field => $value){
 //					if($value[1] || ((string)(float)$value[0] === (string)$value[0])){	//MySQL function or number
 					if($value[1] || (is_numeric($value[0]) && !is_string($value[0]))){ //MySQL function or number
 						$valueDb = $value[0];
@@ -277,7 +277,7 @@ class table_prototype{
 			}
 			if($this->dodb['what'] == 'UPDATE' || substr($this->dodb['what'], 0, 6) == 'SELECT' || $this->dodb['what'] == 'DELETE'){
 				if($this->dodb['where'] == array() && ($this->dodb['what'] == 'UPDATE' || $this->dodb['what'] == 'DELETE')){
-					$this->where(array('field'=>'id', 'operator'=>'=', 'value'=>$this->get('id')));
+					$this->where(array('field' => 'id', 'operator' => '=', 'value' => $this->get('id')));
 				}
 
 				if($this->dodb['where'] != array()){
@@ -298,7 +298,7 @@ class table_prototype{
 			$qry .= $this->dodb['postfix'];
 			if(substr($this->dodb['what'], 0, 6) == 'INSERT' && is_array($this->dodb['on_dup_update']) && count($this->dodb['on_dup_update']) > 0){
 				$qry .= $nl.'ON DUPLICATE KEY UPDATE ';
-				foreach($this->dodb['on_dup_update'] as $k=> $v){
+				foreach($this->dodb['on_dup_update'] as $k => $v){
 					$qry .= ' `'.$k.'`='.$v.', ';
 				}
 				$qry = substr(trim($qry), 0, -1);
@@ -348,7 +348,7 @@ class table_prototype{
 			$this->select()->from($from)->fields()->where($id)->limit(1)->do_db();
 			$ret = $this->db->fetch_array($this->last_result);
 		}else{
-			$this->select()->from($from)->fields()->where(array(array('field'=>'id', 'operator'=>'=', 'value'=>$id)))->limit(1)->do_db();
+			$this->select()->from($from)->fields()->where(array(array('field' => 'id', 'operator' => '=', 'value' => $id)))->limit(1)->do_db();
 			$ret = $this->db->fetch_array($this->last_result);
 		}
 //			$timeout = 1;
@@ -398,7 +398,7 @@ class table_prototype{
 					}else{
 						$value = $record[$field];
 					}
-					$retrieve_fields[] = array('name'=>$field, 'operator'=>'=', 'value'=>$value);
+					$retrieve_fields[] = array('name' => $field, 'operator' => '=', 'value' => $value);
 				}
 			}else{
 				$retrieve_fields = $record['id'];
@@ -493,9 +493,9 @@ class table_prototype{
 		$nl				 = "\n";
 		$tab			 = "\t";
 		if(is_numeric($where)){
-			$where = array(array('field'=>'id', 'operator'=>'=', 'value'=>$where));
+			$where = array(array('field' => 'id', 'operator' => '=', 'value' => $where));
 		}elseif(count($where) == 1 && isset($where[0]) && is_numeric($where[0])){
-			$where = array(array('field'=>'id', 'operator'=>'=', 'value'=>$where[0]));
+			$where = array(array('field' => 'id', 'operator' => '=', 'value' => $where[0]));
 		}elseif(!is_array($where)){
 			return 1;
 		}
@@ -574,7 +574,7 @@ class table_prototype{
 			case 'IN':
 				$value	 = '(';
 				if(is_array($where['value'])){
-					foreach($where['value'] as $k=> $v){
+					foreach($where['value'] as $k => $v){
 						$where['value'][$k] = $this->_escape_field($where['value'][$k], $escape);
 					}
 					$value .= implode(',', $where['value']);
@@ -643,26 +643,44 @@ class table_prototype{
 		return $this->bulk_actions;
 	}
 	public function get_fields(){
-		$this->fields = array();
+//		$this->fields = array();
 		return $this->fields;
 	}
 	public function add($tt_post){
 		if(is_array($tt_post)){
 			$filters = array();
 			$fields	 = $this->get_fields();
-			foreach($fields as $key=> $value){
+			$errors	 = array();
+			foreach($fields as $key => $value){
 				if($value['post'] == true && (isset($tt_post[$key]) || !is_null($value['default']))){
-					if(isset($tt_post[$key])){
-						$$key = $tt_post[$key];
+					$required = $value['required'];
+					if($required){
+						//see if it's in the post if not add error
+						if(isset($tt_post[$key]) && !empty($tt_post[$key])){
+							$$key = $tt_post[$key];
+							$this->set($key, $$key);
+						}else{
+							$display	 = $value['display'];
+							$errors[]	 = "$display is a required field.";
+						}
 					}else{
-						$$key = $value['default'];
+						if(isset($tt_post[$key])){
+							$$key = $tt_post[$key];
+						}else{
+							$$key = $value['default'];
+						}
+						$this->set($key, $$key);
 					}
-					$this->set($key, $$key);
 				}
 			}
-			$ret = $this->insert()->do_db();
+			if(empty($errors)){
+				$this->insert()->do_db();
+				$ret = true;
+			}else{
+				$ret = $errors;
+			}
 		}else{
-			$ret = false;
+			$ret = array();
 		}
 		return $ret;
 	}
@@ -670,14 +688,14 @@ class table_prototype{
 		if($id > 0 && is_array($tt_post)){
 			$filters = array();
 			$fields	 = $this->get_fields();
-			foreach($fields as $key=> $value){
+			foreach($fields as $key => $value){
 				if($value['post'] == true && (isset($tt_post[$key]) || !is_null($value['default']))){
 					if(isset($tt_post[$key])){
 						$this->set($key, $tt_post[$key]);
 					}
 				}
 			}
-			$filters[]	 = array('field'=>'id', 'operator'=>'=', 'value'=>$id);
+			$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
 			$ret		 = $this->update()->where($filters)->do_db();
 		}else{
 			$ret = false;
@@ -688,10 +706,10 @@ class table_prototype{
 		$ret = false;
 		if(is_array($tt_post)){
 			$fields = $this->get_fields();
-			foreach($tt_post as $key=> $value){
+			foreach($tt_post as $key => $value){
 				if(isset($fields[$key]) && is_array($value) && $fields[$key]['post'] == true){
-					foreach($value as $id=> $vv){
-						$filters = array(array('field'=>'id', 'operator'=>'=', 'value'=>$id));
+					foreach($value as $id => $vv){
+						$filters = array(array('field' => 'id', 'operator' => '=', 'value' => $id));
 						$ret	 = $this->update()->set($key, $vv)->where($filters)->do_db();
 					}
 				}
@@ -703,7 +721,7 @@ class table_prototype{
 	}
 	public function remove($id){
 		$filters	 = array();
-		$filters[]	 = array('field'=>'id', 'operator'=>'=', 'value'=>$id);
+		$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
 		return $this->delete()->where($filters)->do_db();
 	}
 	public function change($field, $value = NULL, $id = NULL, $from = ''){
@@ -713,7 +731,7 @@ class table_prototype{
 		if(!empty($id) && !empty($field)){
 			if(!is_array($id)){
 				$filters	 = array();
-				$filters[]	 = array('field'=>'id', 'operator'=>'=', 'value'=>$id);
+				$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
 			}else{
 				$filters = $id;
 			}

@@ -9,6 +9,19 @@ class pages extends table_prototype {
 		parent::__construct();
 		$this->set_table_name('page')->set_auto_lock_in_shared_mode(true);
 	}
+	public function get_info($where = NULL, $from = NULL){
+		if(!is_array($where) && !is_numeric($where)){
+			//we're passing in the alias
+			$page_where		 = array();
+			$page_where[]	 = array('field' => 'alias', 'operator' => '=', 'value' => $where);
+			$where			 = $page_where;
+		}
+		$_info = parent::get_info($where, $from);
+		if(is_array($_info) && !empty($_info)){
+			$_info['content'] = $this->prep_content($_info['content']);
+		}
+		return $_info;
+	}
 	public function get_pages($id, $type = 'category'){
 		$lib = ll('table_prototype');
 		switch($type){
@@ -40,22 +53,52 @@ class pages extends table_prototype {
 		return $return;
 	}
 	public function prep_content($content){
+		// Can look like this : [[[image:122{class:my-class,width:107}]]]
+		// Or like this : [[[image:122]]]
 		$matches = array();
-		preg_match('/\[\[\[(.+?):(.+?)\]\]\]/', $content, $matches);
+		preg_match_all('/\[\[\[(.+?):(.+?)\]\]\]/', $content, $matches);
 		$from	 = array();
 		$to		 = array();
-		foreach($matches[1] as $k => $match){
-			$from[] = $matches[0][$k];
-			switch($match){
-				case'image':
-				case'product':
-				case'catgory':
-					$converted = ll('images')->get_image($matches[2][$k], $match);
-					break;
-				default:
-					break;
+		if(isset($matches[1])){
+			foreach($matches[1] as $k => $match){
+				$from[] = $matches[0][$k];
+				switch($match){
+					case'image':
+					case'product':
+					case'catgory':
+					case'component':
+					case'part':
+						$id					 = $matches[2][$k];
+						$attribute_string	 = "";
+						if(is_numeric($id)){
+							//we have an id, no attributes
+							$src = ll('images')->get_image($id, $match);
+						}else{
+							$attr_matches = array();
+							preg_match('/(.+?){(.+?)}/', $id, $attr_matches);
+							if(isset($attr_matches[1]) && !empty($attr_matches[1])){
+								$id			 = $attr_matches[1];
+								$src		 = ll('images')->get_image($id, $match);
+								$attributes	 = explode(',', $attr_matches[2]);
+								if(is_array($attributes) && !empty($attributes)){
+									foreach($attributes as $attribute){
+										$attrs = explode(':', $attribute);
+										$attribute_string .=$attrs[0]."='".$attrs[1]."' ";
+									}
+								}
+							}else{
+								//uh oh somehting went wrong...
+								$src = "/images/no-image.png";
+							}
+						}
+						$converted	 = "<img src='$src' $attribute_string />";
+						break;
+					default:
+						$converted	 = '';
+						break;
+				}
+				$to[] = $converted;
 			}
-			$to[] = $converted;
 		}
 		$prepped = str_replace($from, $to, $content);
 		return $prepped;

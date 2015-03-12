@@ -52,8 +52,8 @@ class fabric {
 	static function redirect($location, $message = '', $timeout = 0, $force_html = false, $template_folder = ''){
 		//if the header has already been sent redirect w/ javascript
 		$args = '';
-		if($template_folder == ''){
-			$template_folder = ll('client')->get('template', 'default');
+		if($template_folder != ''){
+			$template_folder = $template_folder."/";
 		}
 		if(is_array($location)){
 			$tmps		 = $location;
@@ -80,7 +80,7 @@ class fabric {
 			ll('display')
 					->assign('message', $message)
 					->start(true, $template_folder)
-					->show($template_folder.'/message')
+					->show($template_folder.'message')
 					->end(true, $template_folder);
 			//this is to clean the rest of the page... will not output as it is in a different buffer
 		} else{

@@ -37,10 +37,10 @@ class users extends table_prototype {
 			if(is_array(ll('sessions')->get('user_info', false)) && $reset === false){
 				//check from sessions:
 				$this->user = ll('sessions')->get('user_info', false);
-			}elseif(ll('cookies')->get('cid', '') != ''){
+			}elseif(ll('cookies')->get('uid', '') != ''){
 				//check from cookies:
 				$filters	 = array(
-					array('field' => 'id', 'operator' => '=', 'value' => intval(ll('cookies')->get('cid', ''))),
+					array('field' => 'id', 'operator' => '=', 'value' => intval(ll('cookies')->get('uid', ''))),
 				);
 				$this->user	 = $this->select()->field('*')->where($filters)->do_db()->db->fetch_array($this->last_result());
 				ll('sessions')->set('user_info', $this->user);
@@ -95,7 +95,7 @@ class users extends table_prototype {
 			$join[]	 = array('table' => 'privilege', 'how' => "group_privilege.privilege_id");
 		}
 //		$join[]	 = array('table' => 'privilege', 'how' => "user_privilege.privilege_id");
-		$privs	 = $this->get_raw(array(), array(), array(), '', 'privilege', $join, $fields);
+		$privs = $this->get_raw(array(), array(), array(), '', 'privilege', $join, $fields);
 		return $privs;
 		"SELECT 
 			p.id,p.name
@@ -114,7 +114,148 @@ class users extends table_prototype {
 		}
 		return $return;
 	}
-	public function is_logged(){
-		return true;
+	public function is_logged($force_check_password = false){
+		if(is_null($this->logged) || $force_check_password){
+			if(!isset($this->user['emailaddr'])){
+				$this->_fill_user_info(true);
+			}
+			/**
+			 * CODE FOR MULTI SERVER - AUTOMATICALLY LOG OUT OR LOG IN BASED ON MAIN SERVER COMMANDS
+			 */
+			$last_login	 = ll('sessions')->get('last_login', array('time' => 0, 'customer_id' => 0));
+			$last_logout = ll('sessions')->get('last_logout', 0);
+			$last_action = ($last_login['time'] >= $last_logout)?'in':'out';
+
+			$last_action_for_servers = ll('sessions')->get('last_action', array());
+			$this_server_key		 = md5(lc('uri')->get_domain());
+			$this_server_last_action = isset($last_action_for_servers[$this_server_key])?$last_action_for_servers[$this_server_key]:'';
+			if($this_server_last_action != $last_action){
+				if($last_action == 'in'){
+					$timeout_cookies = 24 * 3600 * 30; //30 days
+					ll('cookies')->set('uid', intval($last_login['customer_id']), $timeout_cookies); //,$sett['domain']);
+				}else{
+					$this->_delete_login_cookies();
+				}
+				$last_action_for_servers[$this_server_key] = $last_action;
+				ll('sessions')->set('last_action', $last_action_for_servers);
+			}
+			/**
+			 * END CODE FOR MULTI SERVER
+			 */
+			if(isset($this->user['id']) && intval(ll('cookies')->get('uid', 0)) <= 0){
+				//$sett			= ll('sessions')->get('_settings');
+				$timeout_cookies = 24 * 3600 * 30; //30 days
+				ll('cookies')->set('uid', intval($this->user['id']), $timeout_cookies); //,$sett['domain']);
+			}
+			if(isset($this->user['emailaddr']) && isset($this->user['id']) && $this->user['id'] == ll('cookies')->get('uid', '')){
+				$return = true;
+			}elseif(ll('cookies')->get('cu', '') != '' && isset($this->user['id'])){
+				//a more secure one
+				$return = $this->user['id'] == lc('crypt')->decrypt_id(ll('cookies')->get('cu', ''));
+//			}elseif(isset($this->user['id'])){
+//				$return = $this->user['id']>0;
+			}else{
+				$return = false;
+			}
+			if($return){
+				if($force_check_password && ll('cookies')->get('pu', '') == ''){
+					$return = false;
+				}elseif(ll('cookies')->get('pu', '') != ''){
+					//is the password correct
+					$return = $this->user['password'] == lc('crypt')->decrypt_str(ll('cookies')->get('pu', ''));
+				}
+			}
+		}else{
+			$return = $this->logged;
+		}
+		if(!$force_check_password){
+			$this->logged = $return;
+		}
+		return $return;
+	}
+	public function check_login($emailaddr, $pws = '', $user_id = NULL){
+		$return	 = array();
+		$filters = array();
+		if(!is_null($user_id) && $user_id > 0){
+			$filters[0] = array('field' => 'id', 'operator' => '=', 'value' => $user_id);
+		}elseif($emailaddr != ''){
+			if(is_numeric($emailaddr)){
+				$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => intval($emailaddr));
+				$return[]	 = "No account was found with this user id.";
+			}else{
+				$filters[0][]	 = array('field' => 'email', 'operator' => 'LIKE', 'value' => $emailaddr);
+				$return[]		 = "No account was found with this email address.";
+			}
+		}
+		$i	 = count($filters);
+		$tmp = false;
+		if($i > 0){
+			$filters[$i][]	 = array('field' => 'active', 'operator' => '=', 'value' => 'y');
+			$order_by		 = array();
+			$fields			 = array("id", "password", "email");
+			$ttmp			 = $this->set_sql_cache('once')->set_read('once')->get_raw($filters, $order_by, array(), '1', 'user', array(), $fields);
+			if(is_array($ttmp) && isset($ttmp[0]['id'])){
+				$tmp = $ttmp[0];
+			}else{
+				$ttmp = $this->set_sql_cache('once')->get_raw($filters, $order_by, array(), '1', 'user', array(), $fields);
+				if(is_array($ttmp) && isset($ttmp[0]['id'])){
+					$tmp = $ttmp[0];
+				}
+			}
+		}
+		if(is_array($tmp) && isset($tmp['id'])){
+			/*
+			 * True if:
+			 * if they are trying to login without a password and their account doesn't have one
+			 * if they are succesfully trying to login with email/password
+			 */
+			$success	 = false;
+			$return		 = array();
+			$return[]	 = "That user was not found.";
+			if(!is_null($user_id) && $user_id > 0){
+				$success = true;
+			}
+			$return		 = array();
+			$return[]	 = "You've entered the wrong password";
+			if($pws == '' || ($tmp['password'] == '' && $pws == '') || $tmp['password'] == md5($pws)){
+				$success = true;
+			}
+			if($success){
+				$return = intval($tmp['id']);
+			}
+		}
+		return $return;
+	}
+	public function login($email, $pws = NULL, $user_id = NULL){
+		$user_id = $this->check_login($email, $pws, $user_id);
+		if($user_id !== false && !is_array($user_id)){
+			//need to set the cookies
+			$timeout_cookies = 24 * 3600 * 30; //30 days
+			ll('cookies')->set('im', $user_id, $timeout_cookies);
+			ll('cookies')->set('uid', $user_id, $timeout_cookies);
+			ll('cookies')->set('cu', lc('crypt')->crypt_id($user_id), $timeout_cookies);
+			if(!is_null($pws)){
+				ll('cookies')->set('pu', lc('crypt')->crypt_str(md5($pws)));
+			}else{
+				ll('cookies')->delete('pu');
+			}
+			$last_login = array('time' => time(), 'customer_id' => $user_id);
+			ll('sessions')->set('last_login', $last_login);
+			$this->_fill_user_info(true);
+		}
+		return $user_id;
+	}
+	public function login_user(){
+		$return = false;
+		if(lc('uri')->is_post()){
+			$return		 = array();
+			$return[]	 = "You must pass an email and password.";
+			$email		 = trim(lc('uri')->post('email', ''));
+			$password	 = trim(lc('uri')->post('password', ''));
+			if($email != '' && $password != ''){
+				$return = $this->login($email, $password);
+			}
+		}
+		return $return;
 	}
 }

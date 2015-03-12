@@ -1,7 +1,7 @@
 <?php
 
 //THIS CAN BE DONE MUCH BETTER... but for now it works
-class sessions_db{
+class sessions_db {
 	private $savePath;
 	protected $lib	 = NULL;
 	private $alive	 = true;
@@ -13,17 +13,18 @@ class sessions_db{
 	}
 	public function open($savePath, $sessionName){
 		$config		 = lc('config')->load('db');
-		$this->lib	 = new MYSQLi($config->get('db_server'), $config->get('db_user'), $config->get('db_password'), $config->get('db_database')) OR die('Could not connect to database.');
+		$this->lib	 = mysql_connect($config->get('db_server'), $config->get('db_user'), $config->get('db_password')) OR die('Could not connect to database.');
+		mysql_select_db($config->get('db_database'));
 		return true;
 	}
 	public function close(){
-		return $this->lib->close();
+		return mysql_close($this->lib);
 	}
 	public function read($id){
-		$q	 = "SELECT `content` FROM `session` WHERE `id` = '".$this->lib->real_escape_string($id)."' LIMIT 1";
-		$r	 = $this->lib->query($q);
-		if($r->num_rows == 1){
-			$fields = $r->fetch_assoc();
+		$q	 = "SELECT `content` FROM `session` WHERE `id` = '".mysql_real_escape_string($id)."' LIMIT 1";
+		$r	 = mysql_query($q);
+		if(mysql_num_rows($r) == 1){
+			$fields = mysql_fetch_assoc($r);
 			if(isset($fields['content'])){
 				return $fields['content'];
 			}else{
@@ -36,7 +37,7 @@ class sessions_db{
 		  $filters	 = array();
 		  $filters[]	 = array('field'=>'id', 'operator'=>'=', 'value'=>$id);
 		  $filters[]	 = array('field'=>'active', 'operator'=>'=', 'value'=>'y');
-		  $tmp		 = $this->lib->get_info($filters, 'session');
+		  $tmp		 = ->get_info($filters, 'session');
 		  if(is_array($tmp) && isset($tmp['content'])){
 		  $return = (string)$tmp['content'];
 		  }else{
@@ -47,15 +48,15 @@ class sessions_db{
 	}
 	public function write($id, $data){
 		if(trim($data) != ''){
-			$q = "REPLACE INTO `session` (`id`, `content`) VALUES ('".$this->lib->real_escape_string($id)."', '".$this->lib->real_escape_string($data)."')";
+			$q = "REPLACE INTO `session` (`id`, `content`) VALUES ('".mysql_real_escape_string($id)."', '".mysql_real_escape_string($data)."')";
 		}else{
-			$q = "DELETE FROM `session` WHERE `id` = '".$this->lib->real_escape_string($id)."'";
+			$q = "DELETE FROM `session` WHERE `id` = '".mysql_real_escape_string($id)."'";
 		}
-		$this->lib->query($q);
-		return $this->lib->affected_rows;
+		$r = mysql_query($q);
+		return mysql_affected_rows($r);
 		/*
 		  if($id != ''){
-		  $this->lib->insert()
+		  ->insert()
 		  ->into('session')
 		  ->set('id', $id)
 		  ->set('content', $data)
@@ -69,21 +70,21 @@ class sessions_db{
 		 */
 	}
 	public function destroy($id){
-		$q			 = "DELETE FROM `session` WHERE `id` = '".$this->lib->real_escape_string($id)."'";
-		$this->lib->query($q);
+		$q			 = "DELETE FROM `session` WHERE `id` = '".mysql_real_escape_string($id)."'";
+		$r			 = mysql_query($q);
 		$_SESSION	 = array();
-		return $this->lib->affected_rows;
+		return mysql_affected_rows($r);
 		/*
 		  $filters	 = array();
 		  $filters[]	 = array('field'=>'id', 'operator'=>'=', 'value'=>$id);
 		  //		$filters[]	 = array('field'=>'active', 'operator'=>'=', 'value'=>'y');
-		  //		$this->lib->update()
+		  //		->update()
 		  //				->table('session')
 		  //				->set('active', 'n')
 		  //				->where($filters)
 		  //				->do_db()
 		  //				;
-		  $this->lib->delete()
+		  ->delete()
 		  ->from('session')
 		  ->where($filters)
 		  ->do_db()
@@ -92,21 +93,21 @@ class sessions_db{
 		 */
 	}
 	public function gc($maxlifetime){
-		$q = "DELETE FROM `session` WHERE DATE_ADD(`date_last_modified`, INTERVAL ".(int)$maxlifetime." SECOND) < NOW()";
-		$this->lib->query($q);
+		$q	 = "DELETE FROM `session` WHERE DATE_ADD(`date_last_modified`, INTERVAL ".(int)$maxlifetime." SECOND) < NOW()";
+		$r	 = mysql_query($q);
 
-		return $this->lib->affected_rows;
+		return mysql_affected_rows($r);
 		/*
 		  $filters	 = array();
 		  $filters[]	 = array('field'=>'date_last_modified', 'operator'=>'<', 'value'=>date('Y-m-d H:i:s', time() - $maxlifetime));
 		  //		$filters[]	 = array('field'=>'active', 'operator'=>'=', 'value'=>'y');
-		  //		$this->lib->update()
+		  //		->update()
 		  //				->table('session')
 		  //				->set('active', 'n')
 		  //				->where($filters)
 		  //				->do_db()
 		  //		;
-		  $this->lib->delete()
+		  ->delete()
 		  ->from('session')
 		  ->where($filters)
 		  ->do_db()

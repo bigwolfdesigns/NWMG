@@ -36,7 +36,7 @@ class categories extends table_prototype {
 		foreach($sub_categories as $k => $sub_category){
 			//get the main image
 			$sub_cat_id							 = $sub_category['id'];
-			$sub_categories[$k]['url']			 =  $this->get_url($sub_cat_id);
+			$sub_categories[$k]['url']			 = $this->get_url($sub_cat_id);
 			$sub_categories[$k]['description']	 = ll('pages')->prep_content($sub_category['description']);
 			$sub_categories[$k]['image']		 = ll('categories')->get_image($sub_cat_id);
 		}
@@ -57,7 +57,7 @@ class categories extends table_prototype {
 	}
 	public function get_pages($cat_id){
 		$pages = ll('pages')->get_pages($cat_id, 'category');
-		foreach($pages as $k=>$page){
+		foreach($pages as $k => $page){
 			$pages[$k]['content'] = ll('pages')->prep_content($page['content']);
 		}
 		return $pages;
@@ -107,5 +107,19 @@ class categories extends table_prototype {
 		$breadcrumbs				 = $this->get_breadcrumbs($cat_id);
 		$product_bread_crumb_info	 = array_pop($breadcrumbs);
 		return $product_bread_crumb_info['url'];
+	}
+	public function add($config = 'category'){
+		$return = false;
+		if(lc('uri')->is_post()){
+			$return = parent::add($config);
+		}
+		return $return;
+	}
+	public function edit($id, $config = 'category'){
+		$return = false;
+		if(lc('uri')->is_post() && $id > 0){
+			$return = parent::edit($id, $config);
+		}
+		return $return;
 	}
 }

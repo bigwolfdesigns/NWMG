@@ -76,5 +76,68 @@ class product {
 				->assign('row_count', $product_count)
 				->show('list');
 	}
+	public function web_add(){
+		$return	 = ll('products')->add();
+		$errors	 = array();
+		if($return !== false){
+			if(is_array($return)){
+				//we have errors
+				$errors = $return;
+			}else{
+				//we did it!
+				fabric::redirect(lc('uri')->create_auto_uri(array(CLASS_KEY => 'product', TASK_KEY => 'edit', 'id' => $return)));
+			}
+		}
+		$form_url	 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'product', TASK_KEY => 'add'));
+		$config		 = lc('config')->get_and_unload_config('product');
+		ll('display')
+				->assign('_config', $config)
+				->assign('display_table', 'Product')
+				->assign('action', 'add')
+				->assign('errors', $errors)
+				->assign('form_url', $form_url)
+				->show('form');
+	}
+	public function web_edit(){
+		$id = intval(lc('uri')->get('id', 0));
+		if($id > 0){
+			$return		 = ll('products')->edit($id);
+			$errors		 = array();
+			$product_info	 = ll('products')->get_info($id);
+			if($return !== false){
+				if(is_array($return)){
+					//we have errors
+					$errors = $return;
+				}else{
+					//we did it!
+					fabric::redirect(lc('uri')->create_auto_uri(array(CLASS_KEY => 'product', TASK_KEY => 'edit', 'id' => $id)));
+				}
+			}
+			$form_url	 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'product', TASK_KEY => 'edit', 'id' => $id));
+			$config		 = lc('config')->get_and_unload_config('product');
+			ll('display')
+					->assign('_config', $config)
+					->assign('display_table', 'Product')
+					->assign('action', 'edit')
+					->assign('errors', $errors)
+					->assign('info', $product_info)
+					->assign('id', $id)
+					->assign('form_url', $form_url)
+					->show('form');
+		}
+	}
+	public function web_delete(){
+		$id		 = intval(lc('uri')->get('id', 0));
+		$return	 = false;
+		if($id > 0){
+			if(lc('uri')->post('delete', NULL) != ''){
+				$return = ll('products')->remove($id);
+			}
+		}
+		ll('display')
+				->assign('class_key', 'product')
+				->assign('deleted', $return)
+				->assign('id', $id)
+				->show('delete');
+	}
 }
-

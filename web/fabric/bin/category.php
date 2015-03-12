@@ -4,7 +4,7 @@ if(!defined('BASEPATH')){
 	exit('No direct script access allowed');
 }
 
-class category{
+class category {
 	/**
 	 * Initialize the default class
 	 *
@@ -14,7 +14,7 @@ class category{
 	public function __construct(){
 		ll('client')->set_initial();
 		$task = lc('uri')->get(TASK_KEY, 'view');
-		if(method_exists($this, 'web_'.$task)&&is_callable(array($this, 'web_'.$task))){
+		if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task))){
 			ll('display')->assign('task', $task);
 			$this->{'web_'.$task}();
 		}else{
@@ -24,19 +24,17 @@ class category{
 	}
 	public function web_view(){
 		$category_alias = lc('uri')->get('category', '');
-		if(trim($category_alias)!==''){
+		if(trim($category_alias) !== ''){
 			//get the id for this category
 			//get any ecom pages for this category
 			//get all the sub-categories for this category
 			//if there are no sub-categories for this cat then get the products
-			$cat_id			 = ll('categories')->get_id_from_alias($category_alias);
-			$category_title	 = "Category Not Found";
-			$ecom_content	 = '';
-			if($cat_id>0){
+			$cat_id = ll('categories')->get_id_from_alias($category_alias);
+			if($cat_id > 0){
 				//good we have one
 				$cat_info		 = ll('categories')->get_info($cat_id);
 				$category_title	 = $cat_info['name'];
-				if(trim($cat_info['title'])!=''){
+				if(trim($cat_info['title']) != ''){
 					$category_title = $cat_info['title'];
 				}
 				//content_pages
@@ -67,7 +65,7 @@ class category{
 		$filters		 = ll('display')->get_filter_filters($config);
 		$categories		 = ll('categories')->get_all($filters, array(), array(), '', 'category', array(), array());
 		$category_count	 = count($categories);
-		if($category_count==1){
+		if($category_count == 1){
 //			fabric::redirect('/category/edit/id/'.$categorys[0]['id']);
 		}
 		ll('display')
@@ -76,5 +74,69 @@ class category{
 				->assign('rows', $categories)
 				->assign('row_count', $category_count)
 				->show('list');
+	}
+	public function web_add(){
+		$return	 = ll('categories')->add();
+		$errors	 = array();
+		if($return !== false){
+			if(is_array($return)){
+				//we have errors
+				$errors = $return;
+			}else{
+				//we did it!
+				fabric::redirect(lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'edit', 'id' => $return)));
+			}
+		}
+		$form_url	 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'add'));
+		$config		 = lc('config')->get_and_unload_config('category');
+		ll('display')
+				->assign('_config', $config)
+				->assign('display_table', 'Category')
+				->assign('action', 'add')
+				->assign('errors', $errors)
+				->assign('form_url', $form_url)
+				->show('form');
+	}
+	public function web_edit(){
+		$id = intval(lc('uri')->get('id', 0));
+		if($id > 0){
+			$return		 = ll('categories')->edit($id);
+			$errors		 = array();
+			$cat_info	 = ll('categories')->get_info($id);
+			if($return !== false){
+				if(is_array($return)){
+					//we have errors
+					$errors = $return;
+				}else{
+					//we did it!
+					fabric::redirect(lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'edit', 'id' => $id)));
+				}
+			}
+			$form_url	 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'edit', 'id' => $id));
+			$config		 = lc('config')->get_and_unload_config('category');
+			ll('display')
+					->assign('_config', $config)
+					->assign('display_table', 'Category')
+					->assign('action', 'edit')
+					->assign('errors', $errors)
+					->assign('info', $cat_info)
+					->assign('id', $id)
+					->assign('form_url', $form_url)
+					->show('form');
+		}
+	}
+	public function web_delete(){
+		$id		 = intval(lc('uri')->get('id', 0));
+		$return	 = false;
+		if($id > 0){
+			if(lc('uri')->post('delete', NULL) != ''){
+				$return = ll('categories')->remove($id);
+			}
+		}
+		ll('display')
+				->assign('class_key', 'category')
+				->assign('deleted', $return)
+				->assign('id', $id)
+				->show('delete');
 	}
 }

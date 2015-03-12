@@ -6,9 +6,15 @@ $client['control_classes']	 = array(
 		'all' => true
 	),
 	'product' => array(
-		'manage' => true
+		'manage' => true,
+		'edit'=>true,
+		'add'=>true,
+		'delete'=>true
 	),
 	'category' => array(
-		'manage' => true
+		'manage' => true,
+		'edit'=>true,
+		'add'=>true,
+		'delete'=>true
 	)
 );

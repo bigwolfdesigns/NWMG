@@ -22,7 +22,8 @@ $product = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '30'
+			'length' => '30',
+			'required'=>true,
 		)
 	),
 	'alias'				 => array(
@@ -34,7 +35,8 @@ $product = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '30'
+			'length' => '30',
+			'required'=>true,
 		)
 	),
 	'active'			 => array(

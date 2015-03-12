@@ -110,4 +110,18 @@ class products extends table_prototype {
 		$product_bread_crumb_info	 = array_pop($breadcrumbs);
 		return $product_bread_crumb_info['url'];
 	}
+	public function add($config = 'product'){
+		$return = false;
+		if(lc('uri')->is_post()){
+			$return = parent::add($config);
+		}
+		return $return;
+	}
+	public function edit($id, $config = 'product'){
+		$return = false;
+		if(lc('uri')->is_post() && $id > 0){
+			$return = parent::edit($id, $config);
+		}
+		return $return;
+	}
 }

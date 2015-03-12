@@ -73,27 +73,9 @@ class display_template extends display {
 		}
 		return $return;
 	}
-	public function make_filter_field($key, $form = array(), $value = ''){
-		$form_type	 = isset($form['type'])?$form['type']:'';
-		$length		 = isset($form['length'])?$form['length']:8;
-		$ret		 = "<input type='text' value='$value' name='$key' maxlength='$length' size='16'/>";
-		switch($form_type){
-			case'select':
-				$ret	 = $this->create_select($key, $value, $form);
-				break;
-			case 'date':
-				$lt_val	 = lc('uri')->get($key.'lt', '');
-				$gt_val	 = lc('uri')->get($key.'gt', '');
-				$ret	 = "<input type='text' value='$gt_val' name='$key"."gt' maxlength='$length' size='16'/>";
-				$ret .= "<input type='text' value='$lt_val' name='$key"."lt' maxlength='$length' size='16'/>";
-			default:
-				break;
-		}
-		return $ret;
-	}
-	public function create_select($key, $value, $form = array()){
+	public function create_select($key, $value, $form = array(), $extras = ''){
 		$required	 = isset($form['required']) && $form['required'];
-		$ret		 = "<select ".($required?" class='required_field'":'')." id='id_$key' name='$key'>";
+		$ret		 = "<select class='".($required?"required_field ":"")."$extras' id='id_$key' name='$key'>";
 		$ret .= "<option value='' ".(($value == '')?'SELECTED':'').">Please Select</option>";
 		$table_name	 = isset($form['table'])?$form['table']:false;
 		if($table_name){
@@ -129,7 +111,25 @@ class display_template extends display {
 		}
 		return $ret;
 	}
-	public function make_list_field($key, $value = '', $form = ''){
+	public function make_filter_field($key, $form = array(), $value = ''){
+		$form_type	 = isset($form['type'])?$form['type']:'';
+		$length		 = isset($form['length'])?$form['length']:8;
+		$ret		 = "<input type='text' value='$value' name='$key' maxlength='$length' size='16'/>";
+		switch($form_type){
+			case'select':
+				$ret	 = $this->create_select($key, $value, $form);
+				break;
+			case 'date':
+				$lt_val	 = lc('uri')->get($key.'lt', '');
+				$gt_val	 = lc('uri')->get($key.'gt', '');
+				$ret	 = "<input type='text' value='$gt_val' name='$key"."gt' maxlength='$length' size='16'/>";
+				$ret .= "<input type='text' value='$lt_val' name='$key"."lt' maxlength='$length' size='16'/>";
+			default:
+				break;
+		}
+		return $ret;
+	}
+	public function make_list_field($key, $value = '', $form = array()){
 		$return		 = $value;
 		$form_type	 = isset($form['type'])?$form['type']:'';
 		switch($form_type){
@@ -149,6 +149,36 @@ class display_template extends display {
 				break;
 		}
 		return $return;
+	}
+	public function make_form_field($key, $form = array(), $value = '', $action = 'add', $extras = ''){
+		$length			 = isset($form['length'])?intval($form['length']):8;
+		$required		 = isset($form['required'])?(is_array($form['required'])?(intval($form['required'][$action])):intval($form['required'])):false;
+		$size_num		 = ceil($length / 10) * 10;
+		$size			 = ($size_num >= 40)?40:$size_num;
+		$length_display	 = $length > 0?"maxlength='$length'":"";
+		$class			 = "class='".($required?"required_field ":'')."$extras'";
+		$ret			 = "<input type='text' $class value='$value' name='$key' $length_display size='$size'/>";
+		if(isset($form['type'])){
+			switch($form['type']){
+				case'select':
+					$ret = $this->create_select($key, $value, $form, $extras);
+					break;
+				case'id':
+					$ret = "<span>$value</span>";
+					break;
+				case'textarea':
+					$ret = "<textarea $class name='$key' $length_display style='max-width:438px;max-height:100px; height:50px;width:215px'>$value</textarea>";
+					break;
+				case'image':
+					$ret = "<input class='need_file_path'  type='text' $class value='$value' name='$key' $length_display size='$size'/>";
+					break;
+				case 'date':
+				default:
+					break;
+			}
+		}
+
+		return $ret;
 	}
 	public function get_filter_filters($config){
 		$filters = array();

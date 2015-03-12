@@ -1,7 +1,7 @@
 <?php
 
 $category = array(
-	'id'				 => array(
+	'id'			 => array(
 		'display'	 => 'Category ID',
 		'show'		 => array(
 			'list'	 => true,
@@ -13,7 +13,7 @@ $category = array(
 			'length' => '8',
 		)
 	),
-	'parent_id'			 => array(
+	'parent_id'		 => array(
 		'display'	 => 'Parent',
 		'show'		 => array(
 			'list'	 => true,
@@ -26,7 +26,7 @@ $category = array(
 			'table'			 => 'category'
 		)
 	),
-	'name'				 => array(
+	'name'			 => array(
 		'display'	 => 'Name',
 		'show'		 => array(
 			'list'	 => true,
@@ -34,11 +34,12 @@ $category = array(
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'	 => 'text',
-			'length' => '30'
+			'type'		 => 'text',
+			'length'	 => '30',
+			'required'	 => true,
 		)
 	),
-	'alias'				 => array(
+	'alias'			 => array(
 		'display'	 => 'Alias',
 		'show'		 => array(
 			'list'	 => true,
@@ -46,11 +47,12 @@ $category = array(
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'	 => 'text',
-			'length' => '30'
+			'type'		 => 'text',
+			'length'	 => '30',
+			'required'	 => true,
 		)
 	),
-	'active'			 => array(
+	'active'		 => array(
 		'display'	 => 'Active',
 		'show'		 => array(
 			'list'	 => true,
@@ -62,7 +64,7 @@ $category = array(
 			'transform'	 => array('y' => 'Yes', 'n' => 'No')
 		)
 	),
-	'title'	 => array(
+	'title'			 => array(
 		'display'	 => 'Page Title',
 		'show'		 => array(
 			'list'	 => true,
@@ -74,7 +76,7 @@ $category = array(
 			'length' => 75
 		)
 	),
-	'description'		 => array(
+	'description'	 => array(
 		'display'	 => 'Description',
 		'show'		 => array(
 			'list'	 => false,
@@ -110,7 +112,7 @@ $category = array(
 			'transform'	 => array('y' => 'Yes', 'n' => 'No')
 		)
 	),
-	'catalog'			 => array(
+	'catalog'		 => array(
 		'display'	 => 'Catalog Category',
 		'show'		 => array(
 			'list'	 => true,

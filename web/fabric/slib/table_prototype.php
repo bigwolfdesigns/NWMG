@@ -646,61 +646,60 @@ class table_prototype {
 //		$this->fields = array();
 		return $this->fields;
 	}
-	public function add($tt_post){
-		if(is_array($tt_post)){
-			$filters = array();
-			$fields	 = $this->get_fields();
-			$errors	 = array();
-			foreach($fields as $key => $value){
-				if($value['post'] == true && (isset($tt_post[$key]) || !is_null($value['default']))){
-					$required = $value['required'];
-					if($required){
-						//see if it's in the post if not add error
-						if(isset($tt_post[$key]) && !empty($tt_post[$key])){
-							$$key = $tt_post[$key];
-							$this->set($key, $$key);
-						}else{
-							$display	 = $value['display'];
-							$errors[]	 = "$display is a required field.";
-						}
+	private function _get_data($action, $config = NULL){
+		$return				 = array();
+		$return['errors']	 = array();
+		$return['data']		 = array();
+		if(!is_null($config)){
+			$_config = lc('config')->get_and_unload_config($config);
+			foreach($_config as $k => $conf){
+				if($k !== 'id'){
+					$required	 = isset($conf['form']['required'])?(is_array($conf['form']['required'])?(intval($conf['form']['required'][$action])):intval($conf['form']['required'])):false;
+					$value		 = trim(lc('uri')->post($k, ''));
+					if($required && ($value == '')){
+						$return['errors'][] = "The ".$conf['display']." field is required.";
 					}else{
-						if(isset($tt_post[$key])){
-							$$key = $tt_post[$key];
-						}else{
-							$$key = $value['default'];
-						}
-						$this->set($key, $$key);
+						$return['data'][$k] = $this->db->real_escape_string($value);
 					}
 				}
 			}
-			if(empty($errors)){
-				$this->insert()->do_db();
-				$ret = true;
-			}else{
-				$ret = $errors;
-			}
-		}else{
-			$ret = array();
 		}
-		return $ret;
+		return $return;
 	}
-	public function edit($id, $tt_post){
-		if($id > 0 && is_array($tt_post)){
-			$filters = array();
-			$fields	 = $this->get_fields();
-			foreach($fields as $key => $value){
-				if($value['post'] == true && (isset($tt_post[$key]) || !is_null($value['default']))){
-					if(isset($tt_post[$key])){
-						$this->set($key, $tt_post[$key]);
+	public function add($config = NULL){
+		$data_errors = $this->_get_data('add', $config);
+		$data		 = $data_errors['data'];
+		$return		 = $data_errors['errors'];
+		if(empty($return)){
+			$return = false;
+			if(is_array($data) && !empty($data)){
+				foreach($data as $key => $value){
+					$this->set($key, $value);
+				}
+				$this->insert()->do_db();
+				$return = $this->get_last_inserted_id();
+			}
+		}
+		return $return;
+	}
+	public function edit($id, $config = NULL){
+		$return = false;
+		if($id > 0){
+			$data_errors = $this->_get_data('edit', $config);
+			$data		 = $data_errors['data'];
+			$return		 = $data_errors['errors'];
+			if(empty($return)){
+				$return = false;
+				if(is_array($data) && !empty($data)){
+					foreach($data as $key => $value){
+						$this->set($key, $value);
 					}
+					$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
+					$return		 = $this->update()->where($filters)->do_db();
 				}
 			}
-			$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
-			$ret		 = $this->update()->where($filters)->do_db();
-		}else{
-			$ret = false;
 		}
-		return $ret;
+		return $return;
 	}
 	public function edit_bulk($tt_post){
 		$ret = false;

@@ -21,6 +21,9 @@ class table_prototype {
 	public function __clone(){
 		$this->_reset_dodb();
 	}
+	public function close($read = NULL){
+		return $this->db->close($read);
+	}
 	public function __construct(){
 		$this->_reset_dodb();
 		$this->dodb['table'] = '';
@@ -47,9 +50,17 @@ class table_prototype {
 		$this->dodb['postfix']		 = '';
 		$this->dodb['on_dup_update'] = array();
 //		$this->dodb['read_db']		 = false;
+//		$this->dodb['sql_cache']	 = false;
 	}
 	public function set_read($read){
 		$this->dodb['read_db'] = $read;
+		return $this;
+	}
+	public function get_read(){
+		return isset($this->dodb['read_db'])?$this->dodb['read_db']:false;
+	}
+	public function set_sql_cache($sql_cache){
+		$this->dodb['sql_cache'] = $sql_cache;
 		return $this;
 	}
 	public function last_result(){
@@ -106,6 +117,9 @@ class table_prototype {
 		return $this;
 	}
 	public function qjoin($join){
+		return $this->join($join);
+	}
+	public function join($join){
 		if(is_array($join)){
 			if(isset($join['on']) && !isset($join['how'])){
 				$join['how'] = $join['on'];
@@ -117,7 +131,7 @@ class table_prototype {
 				if(!isset($join['direction'])) $join['direction']		 = 'left';
 				$this->dodb['join'][]	 = array('table' => $join['table'], 'how' => $join['how'], 'direction' => $join['direction']);
 			} else{
-				foreach($join as $k => $v){
+				foreach($join as $v){
 					$this->qjoin($v);
 				}
 			}
@@ -225,6 +239,12 @@ class table_prototype {
 			if(substr($this->dodb['what'], 0, 6) == 'INSERT' || substr($this->dodb['what'], 0, 7) == 'REPLACE'){
 				$qry .= $nl.'INTO ';
 			}elseif(substr($this->dodb['what'], 0, 6) == 'SELECT'){
+				$sql_cache = isset($this->dodb['sql_cache'])?$this->dodb['sql_cache']:false; //true, false, 'once', 'no'
+				if($sql_cache === 'no'){
+					$qry .= ' SQL_NO_CACHE';
+				}elseif($sql_cache !== false){
+					$qry .= ' SQL_CACHE';
+				}
 				if(is_array($this->dodb['fields']) && !empty($this->dodb['fields'])){
 					$qry .= ' '.implode(','.$nl.$tab, $this->dodb['fields']);
 				}else{
@@ -304,7 +324,7 @@ class table_prototype {
 				$qry = substr(trim($qry), 0, -1);
 			}
 
-			if(isset($this->dodb['limit'])){
+			if(substr($this->dodb['what'], 0, 6) != 'INSERT' && isset($this->dodb['limit'])){
 				$qry .= $nl.$this->dodb['limit'];
 			}
 			if($this->auto_lock_in_shared_mode){
@@ -316,16 +336,20 @@ class table_prototype {
 		}
 		return $qry;
 	}
-	public function do_db(){
+	public function run(){
 		$qry				 = $this->_create_query();
 		$this->debug($qry);
 		//mail('fabrizio@fabric.com','qry',$qry);
 //		var_dump($qry);echo '<br />';
 		$read				 = isset($this->dodb['read_db'])?$this->dodb['read_db']:false; //true, false, 'once'
+		$sql_cache			 = isset($this->dodb['sql_cache'])?$this->dodb['sql_cache']:false; //true, false, 'once'
 		$this->last_query	 = $qry;
 		$this->last_result	 = $this->db->query($qry, $read !== false);
 		if($read == 'once'){
 			$this->set_read(false);
+		}
+		if($sql_cache == 'once' || $sql_cache == 'no'){
+			$this->set_sql_cache(false);
 		}
 
 		//bad practice ....
@@ -339,6 +363,9 @@ class table_prototype {
 //		}
 		$this->_reset_dodb();
 		return $this;
+	}
+	public function do_db(){
+		return $this->run();
 	}
 	private function _get_info($id, $from = '', $prepare = false){
 //		$ckey = md5(serialize($id).($from==''?($this->dodb['ttable']!=''?$this->dodb['ttable']:$this->dodb['table']):$from));
@@ -358,26 +385,51 @@ class table_prototype {
 		return $this;
 	}
 	public function get_record($where = NULL, $from = ''){
-		if(is_array($where) || $from != '' || !is_null($where)){
+		if(is_array($where)){
+//			$this->current = $this->select()->from($from)->fields()->where($where)->limit(1)->do_db()->db->fetch_array($this->last_result);
 			$this->_get_info($where, $from);
+		}elseif($from != ''){
+			$this->_get_info($where, $from);
+		}elseif($where != NULL){
+			$this->_get_info($where, $from);
+		}elseif(!isset($this->current['id']) || $this->current['id'] <= 0){
+			
 		}
-//		}elseif(!isset($this->current['id']) || $this->current['id'] <= 0){
-//
-//		} this does nothing?
 		return $this;
 	}
 	public function get($field = '', $default = NULL){
+		$return = false;
 		if($field == '' || is_array($field)){
-			return $this->get_info();
-		}
-		if(!isset($this->current[$field])){
+			$return = $this->get_info();
+		}elseif(!isset($this->current[$field])){
 			$this->get_info(); //to do in case the user override some functions
 		}
-		return isset($this->current[$field])?$this->current[$field]:$default;
+		if($return === false){
+			$return = isset($this->current[$field])?$this->current[$field]:$default;
+	}
+		return $return;
 	}
 	public function get_info($where = NULL, $from = NULL){
 		if(!is_null($where)) $this->get_record($where, $from);
 		return isset($this->current) && is_array($this->current)?$this->current:array();
+	}
+	/**
+	 * this function returns all the records
+	 * using the current set select,table,order,etc...
+	 * in other words a `do_db` and `get_raw` combined
+	 */
+	public function get_records(){
+		$records = array();
+		$this->do_db();
+		$tmps	 = $this->last_result;
+		$db		 = $this->db;
+		while($record	 = $db->fetch_array($tmps)){
+			$records[] = $record;
+		}
+		return $records;
+	}
+	public function affected_rows($read = false){
+		return $this->db->affected_rows($read);
 	}
 	/**
 	 * this function returns every records
@@ -433,7 +485,6 @@ class table_prototype {
 		}else{
 			$field = 'COUNT(*) tot';
 		}
-		$records = array();
 		$this->select()->fields($field)->from($from)->qjoin($join)->where($where)->group($group)->limit(1)->do_db();
 		$tmps	 = $this->last_result;
 		$record	 = $this->db->fetch_array($tmps);
@@ -490,15 +541,17 @@ class table_prototype {
 	}
 	private function _process_where($where){
 		static $recur	 = 0;
+		$return			 = false;
 		$nl				 = "\n";
 		$tab			 = "\t";
-		if(is_numeric($where)){
+		if(!is_array($where)){
 			$where = array(array('field' => 'id', 'operator' => '=', 'value' => $where));
-		}elseif(count($where) == 1 && isset($where[0]) && is_numeric($where[0])){
+		}elseif(count($where) == 1 && isset($where[0]) && !is_array($where[0])){
 			$where = array(array('field' => 'id', 'operator' => '=', 'value' => $where[0]));
 		}elseif(!is_array($where)){
-			return 1;
+			$return = 1;
 		}
+		if($return === false){
 		$recur++;
 		$appends = array();
 		foreach($where as $fil){
@@ -508,19 +561,20 @@ class table_prototype {
 				$appends[] = $nl.str_repeat($tab, $recur).$this->_process_where_single($fil);
 			}
 		}
-		$append = $nl.str_repeat($tab, $recur - 1).'('.implode($recur == 1?' AND ':' OR ', $appends).$nl.str_repeat($tab, $recur - 1).')';
+			$append	 = $nl.str_repeat($tab, $recur - 1).'('.implode($recur == 1?' AND ':' OR ', $appends).$nl.str_repeat($tab, $recur - 1).')';
 		$recur--;
-		return $append;
+			$return	 = $append;
+	}
+		return $return;
 	}
 	private function _process_where_single($where){
 		//need to allow the field name to be called also "name" and not only "field"
 		if((!isset($where['field']) && !isset($where['name'])) || !isset($where['operator'])){
-			return '';
-		}
+			$return = '';
+		}else{
 		if(!isset($where['value'])){
 			$where['value'] = '';
 		}
-		$append		 = '';
 		$field		 = isset($where['field'])?$where['field']:$where['name'];
 		$operator	 = strtoupper($where['operator']);
 		$value		 = $where['value'];
@@ -620,6 +674,7 @@ class table_prototype {
 		}
 		if($return == ''){
 			$return = $field.' '.$operator.' '.$value.' '.$extra;
+		}
 		}
 		return $return;
 	}
@@ -753,11 +808,10 @@ class table_prototype {
 	}
 	public function __get($name){
 		if($name == 'db'){
-			return $this->db;
+			$return = $this->db;
 		}else{
-			return NULL;
+			$return = NULL;
 		}
+		return $return;
 	}
 }
-
-?>

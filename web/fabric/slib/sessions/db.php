@@ -2,7 +2,6 @@
 
 //THIS CAN BE DONE MUCH BETTER... but for now it works
 class sessions_db {
-	private $savePath;
 	protected $lib	 = NULL;
 	private $alive	 = true;
 	public function __destruct(){
@@ -12,108 +11,60 @@ class sessions_db {
 		}
 	}
 	public function open($savePath, $sessionName){
-		$config		 = lc('config')->load('db');
-		$this->lib	 = mysql_connect($config->get('db_server'), $config->get('db_user'), $config->get('db_password')) OR die('Could not connect to database.');
-		mysql_select_db($config->get('db_database'));
+		$this->lib = ll('table_prototype')->set_table_name('session');
 		return true;
 	}
 	public function close(){
-		return mysql_close($this->lib);
+		//No need to close database connections
+		//db will take care of that
+//		return $this->lib->close();
 	}
 	public function read($id){
-		$q	 = "SELECT `content` FROM `session` WHERE `id` = '".mysql_real_escape_string($id)."' LIMIT 1";
-		$r	 = mysql_query($q);
-		if(mysql_num_rows($r) == 1){
-			$fields = mysql_fetch_assoc($r);
-			if(isset($fields['content'])){
-				return $fields['content'];
-			}else{
-				return '';
-			}
-		}else{
-			return '';
+		$return		 = '';
+		$filters	 = array();
+		$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
+		$tmp		 = $this->lib->get_info($filters, 'session');
+		if(is_array($tmp) && isset($tmp['content'])){
+			$return = (string)$tmp['content'];
 		}
-		/*
-		  $filters	 = array();
-		  $filters[]	 = array('field'=>'id', 'operator'=>'=', 'value'=>$id);
-		  $filters[]	 = array('field'=>'active', 'operator'=>'=', 'value'=>'y');
-		  $tmp		 = ->get_info($filters, 'session');
-		  if(is_array($tmp) && isset($tmp['content'])){
-		  $return = (string)$tmp['content'];
-		  }else{
-		  $return = '';
-		  }
-		  return $return;
-		 */
+		return $return;
 	}
 	public function write($id, $data){
 		if(trim($data) != ''){
-			$q = "REPLACE INTO `session` (`id`, `content`) VALUES ('".mysql_real_escape_string($id)."', '".mysql_real_escape_string($data)."')";
+			$return = $this->lib
+					->replace()
+					->into('session')
+					->set('id', $id)
+					->set('content', $data)
+					->set('date_last_modified', date('Y-m-d H:i:s'))
+					->run()
+					->affected_rows();
 		}else{
-			$q = "DELETE FROM `session` WHERE `id` = '".mysql_real_escape_string($id)."'";
+			$return = $this->destroy($id);
 		}
-		$r = mysql_query($q);
-		return mysql_affected_rows($r);
-		/*
-		  if($id != ''){
-		  ->insert()
-		  ->into('session')
-		  ->set('id', $id)
-		  ->set('content', $data)
-		  ->set('date_last_modified', 'NOW()', true)
-		  ->set('active', 'y')
-		  ->on_duplicate_key_update(array('content'=>'VALUES(content)', 'date_last_modified'=>'VALUES(date_last_modified)', 'active'=>'VALUES(active)'))
-		  ->do_db()
-		  ;
-		  }
-		  return true;
-		 */
+		return $return;
 	}
 	public function destroy($id){
-		$q			 = "DELETE FROM `session` WHERE `id` = '".mysql_real_escape_string($id)."'";
-		$r			 = mysql_query($q);
+		$filters	 = array();
+		$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
+		$return		 = $this->lib
+				->delete()
+				->from('session')
+				->where($filters)
+				->run()
+				->affected_rows();
 		$_SESSION	 = array();
-		return mysql_affected_rows($r);
-		/*
-		  $filters	 = array();
-		  $filters[]	 = array('field'=>'id', 'operator'=>'=', 'value'=>$id);
-		  //		$filters[]	 = array('field'=>'active', 'operator'=>'=', 'value'=>'y');
-		  //		->update()
-		  //				->table('session')
-		  //				->set('active', 'n')
-		  //				->where($filters)
-		  //				->do_db()
-		  //				;
-		  ->delete()
-		  ->from('session')
-		  ->where($filters)
-		  ->do_db()
-		  ;
-		  return true;
-		 */
+		return $return;
 	}
 	public function gc($maxlifetime){
-		$q	 = "DELETE FROM `session` WHERE DATE_ADD(`date_last_modified`, INTERVAL ".(int)$maxlifetime." SECOND) < NOW()";
-		$r	 = mysql_query($q);
-
-		return mysql_affected_rows($r);
-		/*
-		  $filters	 = array();
-		  $filters[]	 = array('field'=>'date_last_modified', 'operator'=>'<', 'value'=>date('Y-m-d H:i:s', time() - $maxlifetime));
-		  //		$filters[]	 = array('field'=>'active', 'operator'=>'=', 'value'=>'y');
-		  //		->update()
-		  //				->table('session')
-		  //				->set('active', 'n')
-		  //				->where($filters)
-		  //				->do_db()
-		  //		;
-		  ->delete()
-		  ->from('session')
-		  ->where($filters)
-		  ->do_db()
-		  ;
-		  return true;
-		 *
-		 */
+		$filters	 = array();
+		$filters[]	 = array('field' => 'date_last_modified', 'operator' => '<', 'value' => date('Y-m-d H:i:s', time() - $maxlifetime));
+		$return		 = $this->lib
+				->delete()
+				->from('session')
+				->where($filters)
+				->run()
+				->affected_rows();
+		return $return;
 	}
 }

@@ -10,25 +10,34 @@ class control {
 	 * @return	void
 	 */
 	public function __construct(){
+		$tasks_need_login	 = array('home');
 		ll('client')->set_initial();
-		$task = lc('uri')->get(TASK_KEY, 'login');
-		if(ll('users')->is_logged()){
-			if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task))){
-				ll('display')->assign('task', $task);
-				$this->{'web_'.$task}();
-			}else{
-				ll('display')->assign('task', 'login');
-				$this->web_login();
-			}
+		$task				 = lc('uri')->get(TASK_KEY, 'login');
+		$is_logged			 = ll('users')->is_logged();
+		if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task)) && ((!in_array($task, $tasks_need_login)) || ((in_array($task, $tasks_need_login) && $is_logged)))){
+			ll('display')->assign('task', $task);
+			$this->{'web_'.$task}();
+		}else{
+			ll('display')->assign('task', 'login');
+			$this->web_login();
 		}
 	}
 	public function web_login(){
-		$errors = ll('users')->login_user();
-		if(!is_array($errors) && $errors > 0){
-			//we're logged in go to control home
+		$is_logged	 = ll('users')->is_logged();
+		$redirect	 = true;
+		if(!$is_logged){
+			$redirect	 = false;
+			$errors		 = ll('users')->login_user();
+			if(!is_array($errors) && $errors > 0){
+				$redirect = true;
+				//we're logged in go to control home
+			}
+		}
+		if($redirect){
 			fabric::redirect(lc('uri')->create_auto_uri(array(CLASS_KEY => 'control', TASK_KEY => 'home')));
 		}
 		ll('display')
+				->set_hide_show('nav', false)
 				->assign('errors', $errors)
 				->show('login');
 	}

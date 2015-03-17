@@ -2,7 +2,7 @@
 
 if(!defined('BASEPATH')) exit('No direct script access allowed');
 
-class js{
+class js {
 	protected $config = array();
 	/**
 	 * Initialize the default class
@@ -12,23 +12,22 @@ class js{
 	 */
 	public function __construct(){
 		ini_set('session.use_cookies', '0');
-		$ssid = intval(lc('uri')->get('ssid', 0));
-		if($ssid>0){
-			ll('store')->force_subsite($ssid);
-//			var_dump(ll('store')->get_subsite_id(), ll('store')->get('template','default'));die();
-		}
 		$this->config['uri']		 = &lc('uri');
 		$this->config['template']	 = ll('client')->get('template', 'default');
-		$task						 = $this->config['uri']->get(TASK_KEY, 'common');
-		$task						 = preg_replace('/(.*)\.[\d]{10}/', '$1', $task);
-		if(!method_exists($this, 'web_'.$task)||!is_callable(array($this, 'web_'.$task))){
+		$is_control					 = intval(lc('uri')->get('c', 0));
+		if($is_control){
+			$this->config['template'] = 'control';
+		}
+		$task	 = $this->config['uri']->get(TASK_KEY, 'common');
+		$task	 = preg_replace('/(.*)\.[\d]{10}/', '$1', $task);
+		if(!method_exists($this, 'web_'.$task) || !is_callable(array($this, 'web_'.$task))){
 			$task = 'common';
 		}
 		$this->{'web_'.$task}();
 	}
 	private function send_file($file_cache, $file_type = 'javascript', $expires = 604800){
-		$is_content = (substr($file_cache, 0, 8)=='content:');
-		if($is_content||ll('files')->file_exists($file_cache)){
+		$is_content = (substr($file_cache, 0, 8) == 'content:');
+		if($is_content || ll('files')->file_exists($file_cache)){
 			$is_304 = false;
 			if($is_content){
 				$file_content		 = substr($file_cache, 8);
@@ -39,7 +38,7 @@ class js{
 				$file_stat = stat($file_cache);
 			}
 			$now_gmt = date('D, d M Y H:i:s T', time());
-			$exp_gmt = date('D, d M Y H:i:s T', time()+$expires);
+			$exp_gmt = date('D, d M Y H:i:s T', time() + $expires);
 			$mod_gmt = date('D, d M Y H:i:s T', $file_stat['mtime']);
 
 			$etag	 = md5($file_stat['size'].'-'.$file_stat['mtime'].'-'.$file_cache);
@@ -51,7 +50,7 @@ class js{
 			header('Pragma: public');
 			header('Proxy-Connection: keep-alive');
 			header('Vary: Accept-Encoding');
-			if($file_type!=''){
+			if($file_type != ''){
 				$file_type1 = '';
 				switch($file_type){
 					case 'javascript':
@@ -71,14 +70,14 @@ class js{
 						$file_type1	 = 'image';
 						break;
 				}
-				if($file_type1!=''){
+				if($file_type1 != ''){
 					header('Content-type: '.$file_type1.'/'.$file_type);
 				}
 			}
 			header('Last-Modified: '.$mod_gmt);
 			header('Cache-Control: public, max-age='.$expires);
 			header('Expires: '.$exp_gmt);
-			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])||isset($_SERVER['HTTP_IF_NONE_MATCH'])){
+			if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) || isset($_SERVER['HTTP_IF_NONE_MATCH'])){
 				// parse header
 				$if_modified_since	 = '';
 				$if_none_match		 = '';
@@ -88,7 +87,7 @@ class js{
 				if(isset($_SERVER['HTTP_IF_NONE_MATCH'])){
 					$if_none_match = $_SERVER['HTTP_IF_NONE_MATCH'];
 				}
-				if($if_modified_since==$mod_gmt||$if_none_match==$etag){
+				if($if_modified_since == $mod_gmt || $if_none_match == $etag){
 					header($_SERVER['SERVER_PROTOCOL'].' 304 Not Modified');
 					// the browser's cache is still up to date
 					$is_304 = true;
@@ -96,7 +95,7 @@ class js{
 			}
 			if(!$is_304){
 				$config = lc('config')->get_and_unload_config('display');
-				if($config['gzip']&&extension_loaded('zlib')&&ob_start('ob_gzhandler')){
+				if($config['gzip'] && extension_loaded('zlib') && ob_start('ob_gzhandler')){
 					ob_implicit_flush(0);
 				}else{
 					header('Content-Length: '.$file_stat['size']);
@@ -113,7 +112,7 @@ class js{
 //		exit(1);
 	}
 	private function _ash_file($file){
-		$is_content = (substr($file, 0, 8)=='content:');
+		$is_content = (substr($file, 0, 8) == 'content:');
 		if($is_content){
 			$return = substr('0123456789'.abs(crc32($file)), -10);
 		}elseif(ll('files')->file_exists($file)){
@@ -127,15 +126,15 @@ class js{
 		$uri			 = $this->config['uri'];
 		$file			 = str_replace('|', DIRECTORY_SEPARATOR, $uri->get('f', ''));
 		$found_extension = '';
-		if($file==''){
+		if($file == ''){
 			$tmps = $uri->get_num();
 			foreach($tmps as $k => $tmp){
-				if($k>=3&&$tmp!=''){
+				if($k >= 3 && $tmp != ''){
 					$file .= $tmp.DIRECTORY_SEPARATOR;
 				}
 			}
 		}
-		if(substr($file, -1)==DIRECTORY_SEPARATOR){
+		if(substr($file, -1) == DIRECTORY_SEPARATOR){
 			$file = substr($file, 0, -1);
 		}
 		$file		 = preg_replace('/(.*)\.[\d]{10}/', '$1', $file);
@@ -144,15 +143,15 @@ class js{
 		$file_cache	 = TPLPATH.$template.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.$file;
 		$allowedExt	 = array('js', $uri->get_extension());
 		foreach($allowedExt as $ext){
-			if(ll('files')->file_exists($file_cache.'.'.$ext)&&is_file($file_cache.'.'.$ext)){
+			if(ll('files')->file_exists($file_cache.'.'.$ext) && is_file($file_cache.'.'.$ext)){
 				$found_extension = $ext;
 				$file_cache .= '.'.$ext;
 				break;
 			}
 		}
-		if(!ll('files')->file_exists($file_cache)&&$template!='default'){
+		if(!ll('files')->file_exists($file_cache) && $template != 'default'){
 			$file_cache = TPLPATH.'default'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.$file;
-			if(ll('files')->file_exists($file_cache.'.'.$ext)&&is_file($file_cache.'.'.$ext)){
+			if(ll('files')->file_exists($file_cache.'.'.$ext) && is_file($file_cache.'.'.$ext)){
 				$found_extension = $ext;
 				$file_cache .= '.'.$ext;
 			}
@@ -160,14 +159,14 @@ class js{
 		if(!ll('files')->file_exists($file_cache)){
 			$file_cache = TPLPATH.'js'.DIRECTORY_SEPARATOR.$file;
 			foreach($allowedExt as $ext){
-				if(ll('files')->file_exists($file_cache.'.'.$ext)&&is_file($file_cache.'.'.$ext)){
+				if(ll('files')->file_exists($file_cache.'.'.$ext) && is_file($file_cache.'.'.$ext)){
 					$found_extension = $ext;
 					$file_cache .= '.'.$ext;
 					break;
 				}
 			}
 		}
-		if(ll('files')->file_exists($file_cache)&&is_file($file_cache)){
+		if(ll('files')->file_exists($file_cache) && is_file($file_cache)){
 			if($return_real_path){
 				$return = $file_cache;
 			}elseif($return_ash){
@@ -180,16 +179,16 @@ class js{
 				$cache_file	 = strtolower(crc32($file_cache));
 				$folder		 = TMPPATH.'tmp_files'.DIRECTORY_SEPARATOR.substr($cache_file, 0, 2).DIRECTORY_SEPARATOR;
 				$file_cache	 = $folder.$file_cache;
-				$content	 = false;//lc('cache')->get($file_cache, false);
-				if($content==false){
-					if($found_extension=='js'){
+				$content	 = false; //lc('cache')->get($file_cache, false);
+				if($content == false){
+					if($found_extension == 'js'){
 						$content = ll('format')->minify_js(file_get_contents($file));
 					}else{
 						$content = file_get_contents($file);
 					}
 //					lc('cache')->set($file_cache, $content, true, 7200);
 				}
-				$return = $this->send_file('content:'.$content, $found_extension=='js'?'javascript':$found_extension);
+				$return = $this->send_file('content:'.$content, $found_extension == 'js'?'javascript':$found_extension);
 			}
 		}else{
 			$return = false;
@@ -207,12 +206,12 @@ class js{
 			$old_f	 = $uri->get('f', NULL);
 			foreach($scripts as $script){
 				if(
-						isset($script['type'])&&
-						isset($script['language'])&&
-						isset($script['src'])&&
-						strtolower($script['type'])=='text/javascript'&&
-						strtolower($script['language'])=='javascript'&&
-						strtolower(substr($script['src'], 0, 4))=='/js/'
+						isset($script['type']) &&
+						isset($script['language']) &&
+						isset($script['src']) &&
+						strtolower($script['type']) == 'text/javascript' &&
+						strtolower($script['language']) == 'javascript' &&
+						strtolower(substr($script['src'], 0, 4)) == '/js/'
 				){
 					$uri->set('f', str_replace('/js/', '', $script['src']));
 					$files[$script['src']]			 = $this->web_common(true);
@@ -227,22 +226,22 @@ class js{
 //			$cache_file	 = strtolower(crc32($this->config['subsite_id']));
 //			$folder		 = TMPPATH.'tmp_files'.DIRECTORY_SEPARATOR.substr($cache_file, 0, 2).DIRECTORY_SEPARATOR;
 //			$file_cache	 = $folder.$this->config['subsite_id'].md5(serialize($files)).'.js';
-			$content	 = false;//lc('cache')->get($file_cache, false);
-			if($content==false){
+			$content = false; //lc('cache')->get($file_cache, false);
+			if($content == false){
 				$content = '';
 				foreach($files as $file){
 					if(ll('files')->file_exists($file)){
 						$content .= file_get_contents($file).';'; //just in case, add an extra ; at the end of the file
 					}
 				}
-				if($content!=''){
+				if($content != ''){
 					$content = ll('format')->minify_js($content);
 //					lc('cache')->set($file_cache, $content, true, 7200);
 				}else{
 					$return = false;
 				}
 			}
-			if($return!==false){
+			if($return !== false){
 				if($return_ash){
 					$return = $this->_ash_file('content:'.$content);
 				}else{

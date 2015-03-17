@@ -1,6 +1,6 @@
 <?php
 
-class format{
+class format {
 	private $formats = array();
 	public function __construct(){
 		$this->formats = lc('config')->get_and_unload_config('format');
@@ -221,7 +221,7 @@ class format{
 		$file_cache	 = strtolower(md5($text));
 		$folder		 = TMPPATH.'tmp_files'.DIRECTORY_SEPARATOR.substr($file_cache, 0, 2).DIRECTORY_SEPARATOR;
 		$file_cache	 = $folder.$file_cache.'_content.js';
-		$contents	 = false;//lc('cache')->get($file_cache, false);
+		$contents	 = false; //lc('cache')->get($file_cache, false);
 //		if(!is_dir($folder) && !@mkdir($folder, 0766, true)){
 //			return 'Impossible to create the cache folder: '.$folder;
 //			return 1;
@@ -237,21 +237,21 @@ class format{
 				if($force_minify){
 					$minification_submissions++;
 					$post_text		 = http_build_query(array(
-						'js_code'			=>$text,
-						'output_info'		=>'compiled_code', //($returnErrors ? 'errors' : 'compiled_code'),
-						'output_format'		=>'text',
-						'compilation_level'	=>'SIMPLE_OPTIMIZATIONS', //'ADVANCED_OPTIMIZATIONS',//'SIMPLE_OPTIMIZATIONS'
+						'js_code'			 => $text,
+						'output_info'		 => 'compiled_code', //($returnErrors ? 'errors' : 'compiled_code'),
+						'output_format'		 => 'text',
+						'compilation_level'	 => 'SIMPLE_OPTIMIZATIONS', //'ADVANCED_OPTIMIZATIONS',//'SIMPLE_OPTIMIZATIONS'
 							), null, '&');
 					$URL			 = 'http://closure-compiler.appspot.com/compile';
 					$allowUrlFopen	 = preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen'));
 					if($allowUrlFopen){
 						$contents = @file_get_contents($URL, false, stream_context_create(array(
-									'http'=>array(
-										'method'		=>'POST',
-										'header'		=>'Content-type: application/x-www-form-urlencoded',
-										'content'		=>$post_text,
-										'max_redirects'	=>0,
-										'timeout'		=>5,
+									'http' => array(
+										'method'		 => 'POST',
+										'header'		 => 'Content-type: application/x-www-form-urlencoded',
+										'content'		 => $post_text,
+										'max_redirects'	 => 0,
+										'timeout'		 => 5,
 									)
 						)));
 					}elseif(defined('CURLOPT_POST')){
@@ -294,7 +294,7 @@ class format{
 			$file_cache	 = strtolower(md5($text));
 			$folder		 = TMPPATH.'tmp_files'.DIRECTORY_SEPARATOR.substr($file_cache, 0, 2).DIRECTORY_SEPARATOR;
 			$file_cache	 = $folder.$file_cache.'_content.html';
-			$buffer		 = false;//lc('cache')->get($file_cache, false);
+			$buffer		 = false; //lc('cache')->get($file_cache, false);
 //			if(!is_dir($folder) && !@mkdir($folder, 0766, true)){
 //				return 'Impossible to create the cache folder: '.$folder;
 //			}
@@ -324,9 +324,9 @@ class format{
 				$ret		 = preg_match_all($search_css, $text, $tmps);
 				$t_css		 = array();
 				if($ret !== false && $ret > 0){
-					foreach($tmps as $k=> $v){
+					foreach($tmps as $k => $v){
 						if($k > 0){
-							foreach($v as $kk=> $vv){
+							foreach($v as $kk => $vv){
 								$t_css[] = $vv;
 							}
 						}
@@ -341,7 +341,7 @@ class format{
 				$search_js		 = '/<\s*script\b[^>]*>(.*?)<\s*\/script>/is';
 				$ret			 = preg_match_all($search_js, $text, $tmps, PREG_SET_ORDER);
 				if($ret !== false && $ret > 0){
-					foreach($tmps as $k=> $v){
+					foreach($tmps as $k => $v){
 						//let's check if we have a souce (src="")
 						$ret = preg_match_all($search_js_ext, $v[0], $ttmps);
 						if($ret !== false && $ret > 0){
@@ -364,9 +364,9 @@ class format{
 				$ret			 = preg_match_all($search_no_js, $text, $tmps);
 				$t_js			 = array();
 				if($ret !== false && $ret > 0){
-					foreach($tmps as $k=> $v){
+					foreach($tmps as $k => $v){
 						if($k > 0){
-							foreach($v as $kk=> $vv){
+							foreach($v as $kk => $vv){
 								$t_js[] = $vv;
 							}
 						}
@@ -456,5 +456,8 @@ class format{
 			}
 		}
 		return $buffer;
+	}
+	public function de_underscore($str){
+		return ucwords(str_replace('_', ' ', $str));
 	}
 }

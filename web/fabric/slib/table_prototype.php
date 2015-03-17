@@ -406,7 +406,7 @@ class table_prototype {
 		}
 		if($return === false){
 			$return = isset($this->current[$field])?$this->current[$field]:$default;
-	}
+		}
 		return $return;
 	}
 	public function get_info($where = NULL, $from = NULL){
@@ -552,19 +552,19 @@ class table_prototype {
 			$return = 1;
 		}
 		if($return === false){
-		$recur++;
-		$appends = array();
-		foreach($where as $fil){
-			if(!isset($fil['field']) && !isset($fil['name'])){
-				$appends[] = $nl.str_repeat($tab, $recur).$this->_process_where($fil);
-			}else{
-				$appends[] = $nl.str_repeat($tab, $recur).$this->_process_where_single($fil);
+			$recur++;
+			$appends = array();
+			foreach($where as $fil){
+				if(!isset($fil['field']) && !isset($fil['name'])){
+					$appends[] = $nl.str_repeat($tab, $recur).$this->_process_where($fil);
+				}else{
+					$appends[] = $nl.str_repeat($tab, $recur).$this->_process_where_single($fil);
+				}
 			}
-		}
 			$append	 = $nl.str_repeat($tab, $recur - 1).'('.implode($recur == 1?' AND ':' OR ', $appends).$nl.str_repeat($tab, $recur - 1).')';
-		$recur--;
+			$recur--;
 			$return	 = $append;
-	}
+		}
 		return $return;
 	}
 	private function _process_where_single($where){
@@ -572,109 +572,109 @@ class table_prototype {
 		if((!isset($where['field']) && !isset($where['name'])) || !isset($where['operator'])){
 			$return = '';
 		}else{
-		if(!isset($where['value'])){
-			$where['value'] = '';
-		}
-		$field		 = isset($where['field'])?$where['field']:$where['name'];
-		$operator	 = strtoupper($where['operator']);
-		$value		 = $where['value'];
-		$extra		 = isset($where['extra'])?$where['extra']:'';
-		$escape		 = isset($where['escape'])?$where['escape']:'auto'; //this can be : auto (filter/value chooses if escape or not), true (always escapes), false (never escapes)
-		$return		 = '';
+			if(!isset($where['value'])){
+				$where['value'] = '';
+			}
+			$field		 = isset($where['field'])?$where['field']:$where['name'];
+			$operator	 = strtoupper($where['operator']);
+			$value		 = $where['value'];
+			$extra		 = isset($where['extra'])?$where['extra']:'';
+			$escape		 = isset($where['escape'])?$where['escape']:'auto'; //this can be : auto (filter/value chooses if escape or not), true (always escapes), false (never escapes)
+			$return		 = '';
 
-		//let's create some backwards compatibility
-		switch($operator){
-			case 'F=':
-			case 'F>':
-			case 'F<':
-			case 'F!=':
-			case 'F>=':
-			case 'F<=':
-				//field base
-				$operator	 = substr($operator, 1);
-				$escape		 = false;
-				break;
-		}
+			//let's create some backwards compatibility
+			switch($operator){
+				case 'F=':
+				case 'F>':
+				case 'F<':
+				case 'F!=':
+				case 'F>=':
+				case 'F<=':
+					//field base
+					$operator	 = substr($operator, 1);
+					$escape		 = false;
+					break;
+			}
 
-		//fixing some non standard operators
-		switch($operator){
-			case '!=':
-				$operator = '<>';
-				break;
-		}
+			//fixing some non standard operators
+			switch($operator){
+				case '!=':
+					$operator = '<>';
+					break;
+			}
 
-		//let's prepare the $where['value']
-		switch($operator){
-			case 'AGAINST':
-				$value = '(';
-				if(is_array($where['value'])){
-					$value .= $this->_escape_field($where['value'][0], $escape);
-					$value .= ' '.$where['value'][1];
-				}else{
-					$value = $this->_escape_field($where['value'], $escape);
-				}
-				$value .= ')';
-				break;
-			case 'BETWEEN':
-				if(!is_array($where['value'])){
-					$where['value'] = array(0, 0);
-				}else{
-					if(!isset($where['value'][0])) $where['value'][0]	 = 0;
-					if(!isset($where['value'][1])) $where['value'][1]	 = 0;
-				}
-				$value	 = $this->_escape_field($where['value'][0], $escape).' AND '.$this->_escape_field($where['value'][1], $escape);
-				break;
-			case 'NOT IN':
-			case 'IN':
-				$value	 = '(';
-				if(is_array($where['value'])){
-					foreach($where['value'] as $k => $v){
-						$where['value'][$k] = $this->_escape_field($where['value'][$k], $escape);
+			//let's prepare the $where['value']
+			switch($operator){
+				case 'AGAINST':
+					$value = '(';
+					if(is_array($where['value'])){
+						$value .= $this->_escape_field($where['value'][0], $escape);
+						$value .= ' '.$where['value'][1];
+					}else{
+						$value = $this->_escape_field($where['value'], $escape);
 					}
-					$value .= implode(',', $where['value']);
-				}else{
-					$value .= $this->_escape_field($where['value'], $escape);
-				}
-				$value .= ')';
-				break;
-			case 'IS':
-			case 'IS NOT':
-				//exception to _escape_field because the "NULL" will not need to be escaped
-				//so the default behavior is to NOT escape
-				if($escape === false || $escape === 'auto'){
-					$value = $where['value'];
-				}else{
-					$value = '"'.$this->db->real_escape_string($where['value']).'"';
-				}
-				break;
-			case 'FIND_IN_SET':
-			case 'NOT FIND_IN_SET':
-				$value	 = $this->_escape_field($where['value'], $escape);
+					$value .= ')';
+					break;
+				case 'BETWEEN':
+					if(!is_array($where['value'])){
+						$where['value'] = array(0, 0);
+					}else{
+						if(!isset($where['value'][0])) $where['value'][0]	 = 0;
+						if(!isset($where['value'][1])) $where['value'][1]	 = 0;
+					}
+					$value	 = $this->_escape_field($where['value'][0], $escape).' AND '.$this->_escape_field($where['value'][1], $escape);
+					break;
+				case 'NOT IN':
+				case 'IN':
+					$value	 = '(';
+					if(is_array($where['value'])){
+						foreach($where['value'] as $k => $v){
+							$where['value'][$k] = $this->_escape_field($where['value'][$k], $escape);
+						}
+						$value .= implode(',', $where['value']);
+					}else{
+						$value .= $this->_escape_field($where['value'], $escape);
+					}
+					$value .= ')';
+					break;
+				case 'IS':
+				case 'IS NOT':
+					//exception to _escape_field because the "NULL" will not need to be escaped
+					//so the default behavior is to NOT escape
+					if($escape === false || $escape === 'auto'){
+						$value = $where['value'];
+					}else{
+						$value = '"'.$this->db->real_escape_string($where['value']).'"';
+					}
+					break;
+				case 'FIND_IN_SET':
+				case 'NOT FIND_IN_SET':
+					$value	 = $this->_escape_field($where['value'], $escape);
 //				if($escape === false){
 //					$value = $where['value'];
 //				}else{
 //					$value = '"'.$this->db->real_escape_string($where['value']).'"';
 //				}
-				$return	 = $operator.'('.$value.','.$field.')';
-				break;
-			//all of those are falling into the default
-			/*
-			  case 'REGEXP':
-			  case 'LIKE':
-			  case '=':
-			  case '!=':
-			  case '>':
-			  case '<':
-			  case '=>':
-			  case '=<':
-			 */
-			default:
-				$value	 = $this->_escape_field($where['value'], $escape);
-				break;
-		}
-		if($return == ''){
-			$return = $field.' '.$operator.' '.$value.' '.$extra;
-		}
+					$return	 = $operator.'('.$value.','.$field.')';
+					break;
+				//all of those are falling into the default
+				/*
+				  case 'REGEXP':
+				  case 'LIKE':
+				  case '=':
+				  case '!=':
+				  case '>':
+				  case '<':
+				  case '=>':
+				  case '=<':
+				 */
+				default:
+					$value	 = $this->_escape_field($where['value'], $escape);
+					break;
+			}
+			if($return == ''){
+				$return = $field.' '.$operator.' '.$value.' '.$extra;
+			}
 		}
 		return $return;
 	}
@@ -690,7 +690,6 @@ class table_prototype {
 	 *  MANAGEMENT CONNECTION AND DISPLAY PART
 	 * ****************************************** */
 	public function get_related_tables(){
-		$this->related = array();
 		return $this->related;
 	}
 	public function get_bulk_actions(){
@@ -744,7 +743,8 @@ class table_prototype {
 			$data		 = $data_errors['data'];
 			$return		 = $data_errors['errors'];
 			if(empty($return)){
-				$return = false;
+				$return	 = false;
+				$return	 = $this->edit_related($config, $id);
 				if(is_array($data) && !empty($data)){
 					foreach($data as $key => $value){
 						$this->set($key, $value);
@@ -755,6 +755,68 @@ class table_prototype {
 			}
 		}
 		return $return;
+	}
+	public function edit_related($table, $id){
+		$related_table = $this->get_related_tables();
+		foreach($related_table as $related){
+			$serialized_table_data	 = lc('uri')->post('related_table_'.$related, '');
+			$filters				 = array();
+			$filters[]				 = array('field' => $table.'_id', 'operator' => '=', 'value' => $id);
+			$existing_data			 = $this->get_all($filters, array(), array(), '', $related, array());
+			$data					 = array();
+			parse_str($serialized_table_data, $data);
+			if(!is_array($data)){
+				$data = array();
+			}
+			$doit = true;
+			if(empty($data) && !empty($existing_data)){
+				$filters	 = array();
+				$filters[]	 = array('field' => $table.'_id', 'operator' => '=', 'value' => $id);
+				$this->delete()->from($related)->where($filters)->run();
+				//delete all data for this table
+				$doit		 = false;
+			}elseif(empty($data) && !empty($existing_data)){
+				$doit = false;
+			}
+			if($doit){
+				$new_data	 = array();
+				$field_name	 = '';
+				foreach($data as $k => $values){
+					$field_name = $k;
+					foreach($values as $value){
+						$new_data[$k][] = $value;
+					}
+				}
+				$delete_rows = array();
+				foreach($existing_data as $existing){
+					$row_id = $existing['id'];
+					if(!in_array($existing[$field_name], $new_data[$field_name])){
+						$delete_rows[] = $row_id;
+					}
+				}
+				foreach($new_data as $data){
+					foreach($data as $k => $value){
+						foreach($existing_data as $existing){
+							if($existing[$field_name] == $value){
+								unset($new_data[$field_name][$k]);
+							}
+						}
+					}
+				}
+				foreach($new_data as $field_name => $data){
+					foreach($data as $value){
+						$this->set($field_name, $value);
+						$this->set($table.'_id', $id);
+						$this->insert('IGNORE')->into($related)->run();
+					}
+				}
+				foreach($delete_rows as $delete_row){
+					$filters	 = array();
+					$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $delete_row);
+					$this->delete()->from($related)->where($filters)->run();
+				}
+			}
+		}
 	}
 	public function edit_bulk($tt_post){
 		$ret = false;

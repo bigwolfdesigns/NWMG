@@ -58,10 +58,11 @@
 						</div>
 					</li>
 					<li>
-						<a href="<?php  echo lc('uri')->create_uri(array(CLASS_KEY => 'control'));  ?>"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+						<a href="<?php echo lc('uri')->create_uri(array(CLASS_KEY => 'control')); ?>"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
 					</li>
 					<?php
-					foreach($permissions as $has_perm => $perm){
+					foreach($permissions as $perm){
+						$has_perm = $perm['is_privileged'];
 						if($has_perm){
 							$perm_name				 = $perm['name'];
 							$perm_icon				 = $perm['icon'];

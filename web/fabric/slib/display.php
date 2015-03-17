@@ -127,21 +127,21 @@ class display{
 			$v['src']		 = $src;
 		}
 		//ckeditor has a problem with changing the file sname
-		if(strtolower(substr($v['src'], 0, 4)) == '/js/' && strpos($v['src'], 'ckeditor') === false){
-			$uri		 = lc('uri');
-			$old_f		 = $uri->get('f', NULL);
-			$old_task	 = $uri->get(TASK_KEY, NULL);
-			$uri->set('f', str_replace('/js/', '', $v['src']));
-			$uri->set(TASK_KEY, 'null');
-			$ash		 = lc('js')->web_common(false, true);
-			$v['src']	 = str_replace('.js', '.'.$ash.'.js', $v['src']);
-			$uri->set(TASK_KEY, $old_task);
-			if(is_null($old_f)){
-				$uri->delete('f');
-			}else{
-				$uri->set('f', $old_f);
-			}
-		}
+//		if(strtolower(substr($v['src'], 0, 4)) == '/js/' && strpos($v['src'], 'ckeditor') === false){
+//			$uri		 = lc('uri');
+//			$old_f		 = $uri->get('f', NULL);
+//			$old_task	 = $uri->get(TASK_KEY, NULL);
+//			$uri->set('f', str_replace('/js/', '', $v['src']));
+//			$uri->set(TASK_KEY, 'null');
+//			$ash		 = lc('js')->web_common(false, true);
+//			$v['src']	 = str_replace('.js', '.'.$ash.'.js', $v['src']);
+//			$uri->set(TASK_KEY, $old_task);
+//			if(is_null($old_f)){
+//				$uri->delete('f');
+//			}else{
+//				$uri->set('f', $old_f);
+//			}
+//		}
 		$scripts[]				 = $v;
 		$this->output['script']	 = $scripts;
 		return $this;
@@ -158,21 +158,21 @@ class display{
 			$v['href']	 = $href;
 			$v['media']	 = $media;
 		}
-		if(strtolower(substr($v['href'], 0, 5)) == '/css/'){
-			$uri		 = lc('uri');
-			$old_f		 = $uri->get('f', NULL);
-			$old_task	 = $uri->get(TASK_KEY, NULL);
-			$uri->set('f', str_replace('/css/', '', $v['href']));
-			$uri->set(TASK_KEY, 'null');
-			$ash		 = lc('css')->web_common(false, true);
-			$v['href']	 = str_replace('.css', '.'.$ash.'.css', $v['href']);
-			$uri->set(TASK_KEY, $old_task);
-			if(is_null($old_f)){
-				$uri->delete('f');
-			}else{
-				$uri->set('f', $old_f);
-			}
-		}
+//		if(strtolower(substr($v['href'], 0, 5)) == '/css/'){
+//			$uri		 = lc('uri');
+//			$old_f		 = $uri->get('f', NULL);
+//			$old_task	 = $uri->get(TASK_KEY, NULL);
+//			$uri->set('f', str_replace('/css/', '', $v['href']));
+//			$uri->set(TASK_KEY, 'null');
+//			$ash		 = lc('css')->web_common(false, true);
+//			$v['href']	 = str_replace('.css', '.'.$ash.'.css', $v['href']);
+//			$uri->set(TASK_KEY, $old_task);
+//			if(is_null($old_f)){
+//				$uri->delete('f');
+//			}else{
+//				$uri->set('f', $old_f);
+//			}
+//		}
 		$links[]				 = $v;
 		$this->output['link']	 = $links;
 		return $this;

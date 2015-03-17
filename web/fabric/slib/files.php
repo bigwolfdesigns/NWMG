@@ -5,7 +5,7 @@
 //to see if a file already exists
 //as disk access are very "expensive" in time
 
-class files{
+class files {
 	protected $cache;
 	protected $cache_timeout	 = 90;
 	protected $file_info_array	 = array();
@@ -29,7 +29,7 @@ class files{
 	private function _get_file_info($file, $key){
 		if(!isset($this->file_info_array[$file])){
 			$mm								 = $this->mm_cache.$file;
-			$tmp							 = array();//$this->cache->get($mm, array());
+			$tmp							 = array(); //$this->cache->get($mm, array());
 			$this->file_info_array[$file]	 = $tmp;
 		}
 		return (isset($this->file_info_array[$file][$key])?$this->file_info_array[$file][$key]:NULL);
@@ -147,5 +147,3 @@ class files{
 		return isset($filestat['mtime'])?$filestat['mtime']:NULL;
 	}
 }
-
-?>

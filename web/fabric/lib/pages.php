@@ -52,6 +52,33 @@ class pages extends table_prototype {
 		}
 		return $return;
 	}
+	public function get_all_pages($id, $type = 'page'){
+		//returns the info
+		$lib				 = ll('table_prototype');
+		$field				 = 'id';
+		$skip_initial_query	 = false;
+		switch($type){
+			case'category':
+			case'product':
+			case'component':
+			case'part':
+				$lib->set_table_name($type.'_page');
+				$field				 = $type.'_id';
+				break;
+			case'image':
+			default:
+				$type				 = 'page';
+				$skip_initial_query	 = true;
+				break;
+		}
+		$filters	 = array();
+		$filters[]	 = array('field' => $field, 'operator' => '=', 'value' => $id);
+		$return		 = $lib->get_all($filters);
+		if(!is_array($return) || empty($return)){
+			$return = array();
+		}
+		return $return;
+	}
 	public function prep_content($content){
 		// Can look like this : [[[image:122{class:my-class,width:107}]]]
 		// Or like this : [[[image:122]]]

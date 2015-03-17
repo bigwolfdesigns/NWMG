@@ -23,7 +23,8 @@ class category {
 		}
 	}
 	public function web_view(){
-		$category_alias = lc('uri')->get('category', '');
+		$category_alias	 = lc('uri')->get('category', '');
+		$ecom_content	 = '';
 		if(trim($category_alias) !== ''){
 			//get the id for this category
 			//get any ecom pages for this category
@@ -66,7 +67,7 @@ class category {
 		$categories		 = ll('categories')->get_all($filters, array(), array(), '', 'category', array(), array());
 		$category_count	 = count($categories);
 		if($category_count == 1){
-//			fabric::redirect('/category/edit/id/'.$categorys[0]['id']);
+			fabric::redirect('/category/edit/id/'.$categorys[0]['id']);
 		}
 		ll('display')
 				->assign('_config', $config)
@@ -112,8 +113,40 @@ class category {
 					fabric::redirect(lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'edit', 'id' => $id)));
 				}
 			}
-			$form_url	 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'edit', 'id' => $id));
-			$config		 = lc('config')->get_and_unload_config('category');
+			$form_url		 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'edit', 'id' => $id));
+			$config			 = lc('config')->get_and_unload_config('category');
+			$images			 = ll('images')->get_all();
+			$category_images = ll('categories')->get_all_images($id);
+			$pages			 = ll('pages')->get_all_pages();
+			$category_pages	 = ll('categories')->get_all_pages($id);
+			foreach($category_images as $k => $category_image){
+				$image_info			 = ll('images')->get_info($category_image['image_id']);
+				$category_images[$k] = array_merge($image_info, $category_images[$k]);
+				foreach($images as $k => $image){
+					if($image['id'] == $category_image['image_id']){
+						unset($images[$k]);
+					}
+				}
+			}
+			foreach($category_pages as $k => $category_page){
+				$page_info			 = ll('pages')->get_info($category_page['page_id']);
+				$category_pages[$k]	 = array_merge($page_info, $category_pages[$k]);
+				foreach($pages as $k => $page){
+					if($page['id'] == $category_page['page_id']){
+						unset($pages[$k]);
+					}
+				}
+			}
+			$related_tables = array(
+				'image_id'	 => array(
+					'base-image'	 => $images,
+					'category_image' => $category_images,
+				),
+				'page_id'	 => array(
+					'base-page'		 => $pages,
+					'category_page'	 => $category_pages,
+				),
+			);
 			ll('display')
 					->assign('_config', $config)
 					->assign('display_table', 'Category')
@@ -122,6 +155,7 @@ class category {
 					->assign('info', $cat_info)
 					->assign('id', $id)
 					->assign('form_url', $form_url)
+					->assign('related', $related_tables)
 					->show('form');
 		}
 	}

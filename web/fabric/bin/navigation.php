@@ -22,7 +22,7 @@ class navigation {
 					$this->web_nav();
 				}
 			}else{
-			fabric::redirect('/control/login.html', "You must be logged in to view this page.", 30, true);
+				fabric::redirect('/control/login.html', "You must be logged in to view this page.", 30, true);
 			}
 		}else{
 			fabric::redirect('/control.html', "Insufficient Privileges", 30, true);

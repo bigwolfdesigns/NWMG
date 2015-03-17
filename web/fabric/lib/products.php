@@ -22,7 +22,7 @@ class products extends table_prototype {
 		return $return;
 	}
 	public function get_image($product_id){
-		return ll('images')->get_image($product_id);
+		return ll('images')->get_image($product_id,'product');
 	}
 	public function get_id_from_alias($alias){
 		$filters	 = array();

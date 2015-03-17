@@ -28,6 +28,9 @@ class display_template extends display {
 		}
 		return $this;
 	}
+	public function get_hide_show($what){
+		return isset($this->hide_show[$what])?$this->hide_show[$what]:true;
+	}
 	public function show($tplFile, $temp_var = array(), $folder = ''){
 		static $firsttime = true;
 		if($folder == ''){
@@ -204,6 +207,34 @@ class display_template extends display {
 		}
 		return $filters;
 	}
+	public function show_related($table, $info, $id){
+		$id			 = ($id == '')?'':$id;
+		$li_return	 = "<li id='$id' class='ui-state-default'>";
+		$return		 = "No Info";
+		switch($table){
+			case'image':
+				$return = "<img style='max-height:100%;max-width:100%;height:50px;' src='/images/image/".$info['id'].'.'.$info['ext']."'/>";
+				break;
+			case'category_image':
+				if($info['main'] == 'y'){
+					$li_return = "<li id='$id' class='ui-state-default' style='border-color:green;'>";
+				}
+				$return	 = "<img style='max-height:100%;max-width:100%;height:50px;' src='/images/category_image/".$info['id'].".png'/>";
+				$return .= "<span data-id='".$info['id']."' data-value='".$info['main']."'  data-field='main' data-table='$table' class='edit-related' title='Edit' id='edit-info'><i class='fa fa-edit'></i></span>";
+				break;
+			case'page':
+				$return	 = "<span>".$info['id']."-".$info['name']."-".$info['alias']."</span>";
+				break;
+			case'category_page':
+				$return	 = "<span>".$info['id']."-".$info['name']."-".$info['alias']."</span>";
+				break;
+			default:
+				$return	 = isset($info['name'])?$info['name']:$return;
+				break;
+		}
+		$ret = $li_return.$return."</li>";
+		return $ret;
+	}
 	public function pagination($config, $row_count){
 		$last				 = ceil($row_count / $this->default_page_rows);
 		$pagination			 = '';
@@ -273,5 +304,11 @@ class display_template extends display {
 			$page = $last;
 		}
 		return $page;
+	}
+	public function get_limit(){
+		$page		 = lc('uri')->get('page_num', 1);
+		$page_rows	 = $this->default_page_rows;
+		$limit		 = ($page - 1) * $page_rows.','.$page_rows;
+		return $limit;
 	}
 }

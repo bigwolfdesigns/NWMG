@@ -34,8 +34,9 @@
 		?>
 	</head>
 	<body>
-        <div id="wrapper">
-	    <?php
-	    echo ll('client')->show_control_nav();
-	    ?>
-            <div id="page-wrapper">
+		<?php if(ll('display')->get_hide_show('nav')){ ?>
+			<div id="wrapper">
+				<?php echo ll('client')->show_control_nav(); ?>
+				<div id="page-wrapper">
+					<?php
+					}					

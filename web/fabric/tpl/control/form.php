@@ -87,6 +87,9 @@ if(isset($errors) && is_array($errors) && count($errors) > 0){
 							<?php
 						}
 					}
+					if($action == 'edit' && isset($related) && !empty($related)){
+						echo $this->grab('related/table');
+					}
 					?>
 					<div class="form-group">
 						<input type="submit"  class='form-control btn btn-primary' name="submitted" value="<?php echo ucwords($action)." Record" ?>"/>

@@ -1,5 +1,4 @@
 <?php
-
 /*
   fabric SYSTEM
   Based on various other systems
@@ -35,7 +34,7 @@ error_reporting(E_STRICT + E_ALL);
   | NO TRAILING SLASH!
   |
  */
-$fabric_main_folder = 'fabric';		//you can change this as you want
+$fabric_main_folder = 'fabric';  //you can change this as you want
 
 /*
   |===============================================================
@@ -105,6 +104,7 @@ define('TPLPATH', BASEPATH.'tpl'.DIRECTORY_SEPARATOR);
 define('TMPPATH', BASEPATH.'tmp'.DIRECTORY_SEPARATOR); //or you can leave it empty to use a site_driven temporary folder
 define('USRPATH', BASEPATH.'usr'.DIRECTORY_SEPARATOR);
 define('HOMEPATH', USRPATH.'home'.DIRECTORY_SEPARATOR);
+define('IMAGEPATH', '/home/networks/public_html/images/');
 //web paths
 define('WEBPATH', str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, pathinfo($_SERVER['SCRIPT_NAME'], PATHINFO_DIRNAME).DIRECTORY_SEPARATOR));
 define('TPLWEBPATH', WEBPATH.$fabric_main_folder.DIRECTORY_SEPARATOR.'tpl'.DIRECTORY_SEPARATOR);
@@ -146,10 +146,11 @@ require_once SBINPATH.'fabric'.EXT;
 lc('fabric');
 ll('sessions')->start();
 fabric::autoload();
-$class_key = str_replace('-','_',lc('uri')->get(CLASS_KEY, STARTUP));
+$class_key = str_replace('-', '_', lc('uri')->get(CLASS_KEY, STARTUP));
 if(!lc($class_key)){
 	lc('uri')->set(CLASS_KEY, STARTUP);
 	lc(STARTUP);
 }
+
 //TO-DO: unload everything but "display"
 ll('display')->render();

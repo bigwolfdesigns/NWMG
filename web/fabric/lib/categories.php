@@ -5,6 +5,7 @@ if(!defined('BASEPATH')){
 }
 
 class categories extends table_prototype {
+	protected $related = array('category_image','category_page');
 	public function __construct(){
 		parent::__construct();
 		$this->set_table_name('category')->set_auto_lock_in_shared_mode(true);
@@ -55,6 +56,12 @@ class categories extends table_prototype {
 	public function get_image($cat_id){
 		return ll('images')->get_image($cat_id, 'category');
 	}
+	public function get_all_images($cat_id){
+		return ll('images')->get_images($cat_id, 'category');
+	}
+	public function get_all_pages($cat_id){
+		return ll('pages')->get_all_pages($cat_id, 'category');
+	}
 	public function get_pages($cat_id){
 		$pages = ll('pages')->get_pages($cat_id, 'category');
 		foreach($pages as $k => $page){
@@ -76,12 +83,14 @@ class categories extends table_prototype {
 				$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
 			}
 			while(isset($category_info['parent_id']) && $category_info['parent_id'] > 0){
-				$category_info	 = ll('categories')->get_info($category_info['parent_id']);
-				$parent_alias	 = $category_info['alias'];
-				foreach($bread_crumbs as $k => $bread_crumb){
-					$bread_crumbs[$k]['url'] = '/'.$parent_alias.$bread_crumb['url'];
+				$category_info = ll('categories')->get_info($category_info['parent_id']);
+				if(!empty($category_info)){
+					$parent_alias = $category_info['alias'];
+					foreach($bread_crumbs as $k => $bread_crumb){
+						$bread_crumbs[$k]['url'] = '/'.$parent_alias.$bread_crumb['url'];
+					}
+					$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
 				}
-				$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
 			}
 		}
 		$bread_crumbs[] = array('name' => 'Home', 'url' => '/home.html');

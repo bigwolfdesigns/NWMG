@@ -63,10 +63,11 @@ class product {
 		//list them and click links to edit them
 		$config			 = lc('config')->get_and_unload_config('product');
 		$filters		 = ll('display')->get_filter_filters($config);
-		$products		 = ll('products')->get_all($filters, array(), array(), '', 'product', array(), array());
+		$limit			 = ll('display')->get_limit();
+		$products		 = ll('products')->get_all($filters, array(), array(), $limit, 'product', array(), array());
 		$product_count	 = count($products);
 		if($product_count == 1){
-//			fabric::redirect('/product/edit/id/'.$products[0]['id']);
+			fabric::redirect('/product/edit/id/'.$products[0]['id']);
 		}
 //		var_dump($products);
 		ll('display')
@@ -101,8 +102,8 @@ class product {
 	public function web_edit(){
 		$id = intval(lc('uri')->get('id', 0));
 		if($id > 0){
-			$return		 = ll('products')->edit($id);
-			$errors		 = array();
+			$return			 = ll('products')->edit($id);
+			$errors			 = array();
 			$product_info	 = ll('products')->get_info($id);
 			if($return !== false){
 				if(is_array($return)){

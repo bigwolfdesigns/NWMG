@@ -10,7 +10,7 @@ class pages extends table_prototype {
 		$this->set_table_name('page')->set_auto_lock_in_shared_mode(true);
 	}
 	public function get_info($where = NULL, $from = NULL){
-		if(!is_array($where) && !is_numeric($where)){
+		if(!is_array($where) && !is_numeric($where) && !is_null($where)){
 			//we're passing in the alias
 			$page_where		 = array();
 			$page_where[]	 = array('field' => 'alias', 'operator' => '=', 'value' => $where);
@@ -127,7 +127,21 @@ class pages extends table_prototype {
 				$to[] = $converted;
 			}
 		}
-		$prepped = str_replace($from, $to, $content);
+		$prepped = stripslashes(nl2br(str_replace($from, $to, $content)));
 		return $prepped;
+	}
+	public function add($config = 'page'){
+		$return = false;
+		if(lc('uri')->is_post()){
+			$return = parent::add($config);
+		}
+		return $return;
+	}
+	public function edit($id, $config = 'page'){
+		$return = false;
+		if(lc('uri')->is_post() && $id > 0){
+			$return = parent::edit($id, $config);
+		}
+		return $return;
 	}
 }

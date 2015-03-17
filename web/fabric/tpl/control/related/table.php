@@ -14,9 +14,6 @@
 			max-height:300px;
 			overflow:auto;
 		}
-		#page{
-			width:auto;
-		}
 	</style>
 	<div class="row">
 		<div class="col-lg-12">

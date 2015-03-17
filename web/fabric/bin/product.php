@@ -114,8 +114,55 @@ class product {
 					fabric::redirect(lc('uri')->create_auto_uri(array(CLASS_KEY => 'product', TASK_KEY => 'edit', 'id' => $id)));
 				}
 			}
-			$form_url	 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'product', TASK_KEY => 'edit', 'id' => $id));
-			$config		 = lc('config')->get_and_unload_config('product');
+			$form_url			 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'product', TASK_KEY => 'edit', 'id' => $id));
+			$config				 = lc('config')->get_and_unload_config('product');
+			$images				 = ll('images')->get_all();
+			$product_images		 = ll('products')->get_all_images($id);
+			$pages				 = ll('pages')->get_all();
+			$product_pages		 = ll('products')->get_all_pages($id);
+			$features			 = ll('features')->get_all();
+			$product_features	 = ll('products')->get_all_features($id);
+			foreach($product_images as $k => $product_image){
+				$image_info			 = ll('images')->get_info($product_image['image_id']);
+				$product_images[$k]	 = array_merge($image_info, $product_images[$k]);
+				foreach($images as $k => $image){
+					if($image['id'] == $product_image['image_id']){
+						unset($images[$k]);
+					}
+				}
+			}
+			foreach($product_pages as $k => $product_page){
+				$page_info			 = ll('pages')->get_info($product_page['page_id']);
+				$product_pages[$k]	 = array_merge($page_info, $product_pages[$k]);
+				foreach($pages as $k => $page){
+					if($page['id'] == $product_page['page_id']){
+						unset($pages[$k]);
+					}
+				}
+			}
+			foreach($product_features as $k => $product_feature){
+				$feature_info			 = ll('features')->get_info($product_feature['feature_id']);
+				$product_features[$k]	 = array_merge($feature_info, $product_features[$k]);
+				foreach($features as $k => $feature){
+					if($feature['id'] == $product_feature['feature_id']){
+						unset($features[$k]);
+					}
+				}
+			}
+			$related_tables = array(
+				'image_id'	 => array(
+					'base-image'	 => $images,
+					'product_image'	 => $product_images,
+				),
+				'page_id'	 => array(
+					'base-page'		 => $pages,
+					'product_page'	 => $product_pages,
+				),
+				'feature_id' => array(
+					'base-feature'		 => $features,
+					'product_feature'	 => $product_features,
+				),
+			);
 			ll('display')
 					->assign('_config', $config)
 					->assign('display_table', 'Product')
@@ -124,6 +171,7 @@ class product {
 					->assign('info', $product_info)
 					->assign('id', $id)
 					->assign('form_url', $form_url)
+					->assign('related', $related_tables)
 					->show('form');
 		}
 	}

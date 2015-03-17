@@ -117,7 +117,7 @@ class category {
 			$config			 = lc('config')->get_and_unload_config('category');
 			$images			 = ll('images')->get_all();
 			$category_images = ll('categories')->get_all_images($id);
-			$pages			 = ll('pages')->get_all_pages();
+			$pages			 = ll('pages')->get_all();
 			$category_pages	 = ll('categories')->get_all_pages($id);
 			foreach($category_images as $k => $category_image){
 				$image_info			 = ll('images')->get_info($category_image['image_id']);

@@ -393,8 +393,8 @@ END SB-ADMIN
 .edit-related{
 	display: inline-block;
 	color: red;
-	position: absolute;
-	left: 142px;
+/*	position: absolute;
+	left: 142px;*/
 	z-index: 2;
 	cursor: pointer;
 	transition: all .15s ease-in-out;

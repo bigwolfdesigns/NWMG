@@ -11,8 +11,49 @@ class features extends table_prototype {
 	}
 	public function parse_value($value){
 		$return = array();
-		if($value!==''){
-			$return = explode('|',$value);
+		if($value !== ''){
+			$return = explode('|', $value);
+		}
+		return $return;
+	}
+	public function get_features($id, $type = 'feature'){
+		//returns the info
+		$lib				 = ll('table_prototype');
+		$field				 = 'id';
+		$skip_initial_query	 = false;
+		switch($type){
+			case'category':
+			case'product':
+			case'component':
+			case'part':
+				$lib->set_table_name($type.'_feature');
+				$field				 = $type.'_id';
+				break;
+			case'feature':
+			default:
+				$type				 = 'feature';
+				$skip_initial_query	 = true;
+				break;
+		}
+		$filters	 = array();
+		$filters[]	 = array('field' => $field, 'operator' => '=', 'value' => $id);
+		$return		 = $lib->get_all($filters);
+		if(!is_array($return) || empty($return)){
+			$return = array();
+		}
+		return $return;
+	}
+	public function add($config = 'feature'){
+		$return = false;
+		if(lc('uri')->is_post()){
+			$return = parent::add($config);
+		}
+		return $return;
+	}
+	public function edit($id, $config = 'feature'){
+		$return = false;
+		if(lc('uri')->is_post() && $id > 0){
+			$return = parent::edit($id, $config);
 		}
 		return $return;
 	}

@@ -121,6 +121,12 @@ class client extends table_prototype {
 				$new['title']	 = 'default';
 				$new['src']		 = '/js/bootstrap/bootstrap.min.js'.$query_string;
 				array_push($scripts, $new);
+
+				$new			 = array();
+				$new['type']	 = 'text/javascript';
+				$new['title']	 = 'default';
+				$new['src']		 = '/js/ckeditor/ckeditor.js'.$query_string;
+				array_push($scripts, $new);
 			}
 			$display->set_config('link', $links);
 			$display->assign('link', $links);

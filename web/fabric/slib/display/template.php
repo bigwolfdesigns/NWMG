@@ -219,14 +219,35 @@ class display_template extends display {
 				if($info['main'] == 'y'){
 					$li_return = "<li id='$id' class='ui-state-default' style='border-color:green;'>";
 				}
-				$return	 = "<img style='max-height:100%;max-width:100%;height:50px;' src='/images/category_image/".$info['id'].".png'/>";
+				$return = "<img style='max-height:100%;max-width:100%;height:50px;' src='/images/category_image/".$info['id'].'.'.$info['ext']."'/>";
 				$return .= "<span data-id='".$info['id']."' data-value='".$info['main']."'  data-field='main' data-table='$table' class='edit-related' title='Edit' id='edit-info'><i class='fa fa-edit'></i></span>";
+				break;
+			case'product_image':
+				if($info['main'] == 'y'){
+					$li_return = "<li id='$id' class='ui-state-default' style='border-color:green;'>";
+				}
+				$return = "<img style='max-height:100%;max-width:100%;height:50px;' src='/images/product_image/".$info['id'].'.'.$info['ext']."'/>";
+				$return .= "<span data-id='".$info['id']."' data-value='".$info['main']."'  data-field='main' data-table='$table' class='edit-related' title='Edit' id='edit-info'><i class='fa fa-edit'></i></span>";
+				break;
+			case'product_feature':
+				if($info['optional'] == 'y'){
+					$li_return = "<li id='$id' class='ui-state-default' style='border-color:green;'>";
+				}
+				$return = "<span style='word-wrap:break-word'>".$info['feature_id']."-".$info['name']."</span>";
+				$return .= "<span data-id='".$info['id']."' data-value='".$info['optional']."' data-field='optional' data-table='$table' class='edit-related' title='Edit' id='edit-info'><i class='fa fa-edit'></i></span>";
+
 				break;
 			case'page':
 				$return	 = "<span>".$info['id']."-".$info['name']."-".$info['alias']."</span>";
 				break;
+			case'feature':
+				$return	 = "<span style='word-wrap:break-word'>".$info['id']."-".$info['field']."</span>";
+				break;
 			case'category_page':
-				$return	 = "<span>".$info['id']."-".$info['name']."-".$info['alias']."</span>";
+				$return	 = "<span>".$info['page_id']."-".$info['name']."-".$info['alias']."</span>";
+				break;
+			case'product_page':
+				$return	 = "<span>".$info['page_id']."-".$info['name']."-".$info['alias']."</span>";
 				break;
 			default:
 				$return	 = isset($info['name'])?$info['name']:$return;

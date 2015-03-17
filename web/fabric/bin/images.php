@@ -180,11 +180,11 @@ class images {
 		$filters[]	 = array('field' => 'active', 'operator' => '=', 'value' => 'y');
 		$tmp		 = $lib->set_sql_cache('once')->set_read('once')->get_raw($filters, array(NULL), array(), '1', 'image');
 		$file_cache	 = IMAGEPATH.'image'.DIRECTORY_SEPARATOR.'NO_FILE_FOUND';
-		$file_type	 = 'png';
 		if(isset($tmp[0])){
 			$temp			 = ll('client')->get('client_template', '');
 			$template_folder = $temp == ''?'':($temp.'/');
 			$file			 = $tmp[0]['name'];
+			$file_type		 = $tmp[0]['ext'];
 			$file_cache		 = IMAGEPATH."$template_folder/image".DIRECTORY_SEPARATOR.$file.'.'.$file_type;
 		}
 		//Done this way in case the parameters of this function change we only need to change one line instead of two, also duplication of code.
@@ -214,7 +214,7 @@ class images {
 		if(is_array($_info) && !empty($_info)){
 			$temp			 = ll('client')->get('client_template', '');
 			$template_folder = $temp == ''?'':($temp.'/');
-			$file_type		 = 'png';
+			$file_type		 = $_info['ext'];
 			$file			 = $_info['name'];
 			$file_cache		 = IMAGEPATH."$template_folder/image".DIRECTORY_SEPARATOR.$file.'.'.$file_type;
 		}
@@ -252,7 +252,7 @@ class images {
 			if(is_array($_info) && !empty($_info)){
 				$temp			 = ll('client')->get('client_template', '');
 				$template_folder = $temp == ''?'':($temp.'/');
-				$file_type		 = 'png';
+				$file_type		 = $_info['ext'];
 				$file			 = $_info['name'];
 				$file_cache		 = IMAGEPATH."$template_folder/image".DIRECTORY_SEPARATOR.$file.'.'.$file_type;
 			}
@@ -285,7 +285,40 @@ class images {
 			if(is_array($_info) && !empty($_info)){
 				$temp			 = ll('client')->get('client_template', '');
 				$template_folder = $temp == ''?'':($temp.'/');
-				$file_type		 = 'png';
+				$file_type		 = $_info['ext'];
+				$file			 = $_info['name'];
+				$file_cache		 = IMAGEPATH."$template_folder/image".DIRECTORY_SEPARATOR.$file.'.'.$file_type;
+			}
+		}
+		//Done this way in case the parameters of this function change we only need to change one line instead of two, also duplication of code.
+//		$this->send_image($file_cache, $file_type);
+		if(!ll('files')->exists($file_cache)){
+			lc('error')->show_error(404, 'Page not Found');
+		}else{
+			$this->send_image($file_cache, $file_type);
+		}
+	}
+	public function web_product_image(){
+		//WEB FILES
+		//the ID of the web_files is passed as get_num(4)
+		//get_num(4) because: 0 = CLASS_KEY, 1=CLASS, 2=TASK_KEY, 3=TASK, 4=remainder
+		$product_image_id	 = lc('uri')->get_num(4, 0);
+		$lib				 = ll('table_prototype');
+		$filters			 = array();
+		$filters[]			 = array('field' => 'id', 'operator' => '=', 'value' => $product_image_id);
+		$ttmp				 = $lib->set_sql_cache('once')->set_read('once')->get_raw($filters, array(NULL), array(), '1', 'product_image');
+		$file_cache			 = IMAGEPATH.'image'.DIRECTORY_SEPARATOR.'NO_FILE_FOUND';
+		if(isset($ttmp[0])){
+			$ilib		 = ll('table_prototype')->set_table_name('image');
+			$image_id	 = $ttmp[0]['image_id'];
+			$filters	 = array();
+			$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $image_id);
+			$filters[]	 = array('field' => 'active', 'operator' => '=', 'value' => 'y');
+			$_info		 = $ilib->get_info($filters);
+			if(is_array($_info) && !empty($_info)){
+				$temp			 = ll('client')->get('client_template', '');
+				$template_folder = $temp == ''?'':($temp.'/');
+				$file_type		 = $_info['ext'];
 				$file			 = $_info['name'];
 				$file_cache		 = IMAGEPATH."$template_folder/image".DIRECTORY_SEPARATOR.$file.'.'.$file_type;
 			}

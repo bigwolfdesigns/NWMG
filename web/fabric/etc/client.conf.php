@@ -14,6 +14,9 @@ $client['control_classes']	 = array(
 	'feature'	 => array(
 		'all' => true
 	),
+	'page'	 => array(
+		'all' => true
+	),
 	'product'	 => array(
 		'manage' => true,
 		'edit'	 => true,

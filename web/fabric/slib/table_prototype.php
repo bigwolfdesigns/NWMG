@@ -747,6 +747,9 @@ class table_prototype {
 				$return	 = $this->edit_related($config, $id);
 				if(is_array($data) && !empty($data)){
 					foreach($data as $key => $value){
+						if($key == 'content' && $config == 'page'){
+							$value = str_ireplace('\r\n', '', $value);
+						}
 						$this->set($key, $value);
 					}
 					$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);

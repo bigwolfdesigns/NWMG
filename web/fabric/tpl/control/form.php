@@ -77,11 +77,13 @@ if(isset($errors) && is_array($errors) && count($errors) > 0){
 					<?php
 					foreach($_config as $k => $v){
 						if(!isset($v['show'][$action]) || (isset($v['show'][$action]) && $v['show'][$action])){
+							$extras = isset($v['form']['class'])?$v['form']['class']:'';
+							$extras .= ' form-control';
 							?>
 							<div class="form-group row">
 								<label class="col-md-3" ><?php echo$v['display']; ?></label>
 								<div class="input-group col-md-9">
-									<?php echo $this->make_form_field($k, $v['form'], $this->get_form_value($k, isset($info[$k])?$info[$k]:''), $action, 'form-control'); ?>
+									<?php echo $this->make_form_field($k, $v['form'], $this->get_form_value($k, isset($info[$k])?$info[$k]:''), $action, $extras); ?>
 								</div>
 							</div>
 							<?php

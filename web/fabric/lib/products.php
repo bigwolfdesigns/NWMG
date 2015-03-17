@@ -5,6 +5,7 @@ if(!defined('BASEPATH')){
 }
 
 class products extends table_prototype {
+	protected $related = array('product_image','product_page','product_feature');
 	public function __construct(){
 		parent::__construct();
 		$this->set_table_name('product')->set_auto_lock_in_shared_mode(true);
@@ -23,6 +24,15 @@ class products extends table_prototype {
 	}
 	public function get_image($product_id){
 		return ll('images')->get_image($product_id,'product');
+	}
+	public function get_all_images($product_id){
+		return ll('images')->get_images($product_id, 'product');
+	}
+	public function get_all_pages($product_id){
+		return ll('pages')->get_all_pages($product_id, 'product');
+	}
+	public function get_all_features($product_id){
+		return ll('features')->get_features($product_id, 'product');
 	}
 	public function get_id_from_alias($alias){
 		$filters	 = array();

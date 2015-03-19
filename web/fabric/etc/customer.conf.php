@@ -6,7 +6,7 @@ $customer = array(
 		'show'		 => array(
 			'list'	 => true,
 			'add'	 => true,
-			'edit'	 => true
+			'edit'	 => false
 		),
 		'form'		 => array(
 			'type'		 => 'text',

@@ -144,7 +144,9 @@ class display_template extends display {
 					$prim_id_col = 'id';
 					$filters	 = array();
 					$filters[]	 = array('field' => $prim_id_col, 'operator' => '=', 'value' => $value);
-					$ret		 = ll('table_prototype')->get_info($filters, $table_name);
+					$fields		 = array($select_show);
+					$tmp		 = ll('table_prototype')->get_raw($filters, array(), array(), '', $table_name, array(), $fields);
+					$ret		 = isset($tmp[0])?$tmp[0]:array();
 					$return		 = isset($ret[$select_show])?$ret[$select_show]:$value;
 				}elseif($transform){
 					$return = $transform[$value];

@@ -21,9 +21,9 @@ $order = array(
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '8',
-			'required'	 => true
+			'type'			 => 'select',
+			'select_show'	 => 'CONCAT(first_name," ",last_name)',
+			'table'			 => 'customer'
 		)
 	),
 	'order_type_id'	 => array(

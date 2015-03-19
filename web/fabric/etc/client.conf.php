@@ -11,6 +11,9 @@ $client['control_classes']	 = array(
 	'contact'	 => array(
 		'all' => true
 	),
+	'customer'	 => array(
+		'all' => true
+	),
 	'image'	 => array(
 		'all' => true
 	),

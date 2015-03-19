@@ -35,7 +35,7 @@ $category = array(
 		),
 		'form'		 => array(
 			'type'		 => 'text',
-			'length'	 => '30',
+			'length'	 => '100',
 			'required'	 => true,
 		)
 	),
@@ -48,7 +48,7 @@ $category = array(
 		),
 		'form'		 => array(
 			'type'		 => 'text',
-			'length'	 => '30',
+			'length'	 => '100',
 			'required'	 => true,
 		)
 	),

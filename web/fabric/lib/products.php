@@ -5,7 +5,7 @@ if(!defined('BASEPATH')){
 }
 
 class products extends table_prototype {
-	protected $related = array('product_image','product_page','product_feature');
+	protected $related = array('product_image', 'product_page', 'product_feature');
 	public function __construct(){
 		parent::__construct();
 		$this->set_table_name('product')->set_auto_lock_in_shared_mode(true);
@@ -23,7 +23,7 @@ class products extends table_prototype {
 		return $return;
 	}
 	public function get_image($product_id){
-		return ll('images')->get_image($product_id,'product');
+		return ll('images')->get_image($product_id, 'product');
 	}
 	public function get_all_images($product_id){
 		return ll('images')->get_images($product_id, 'product');
@@ -131,6 +131,17 @@ class products extends table_prototype {
 		$return = false;
 		if(lc('uri')->is_post() && $id > 0){
 			$return = parent::edit($id, $config);
+		}
+		return $return;
+	}
+	public function get_select_list(){
+		$fields		 = array('id', 'name');
+		$filters	 = array();
+		$filters[]	 = array('field' => 'active', 'operator' => '=', 'value' => 'y');
+		$products	 = $this->get_raw($filters, array(), array(), '', '', array(), $fields);
+		$return		 = array();
+		foreach($products as $product){
+			$return[$product['id']] = $product['name'];
 		}
 		return $return;
 	}

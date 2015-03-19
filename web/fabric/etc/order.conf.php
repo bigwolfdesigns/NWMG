@@ -1,8 +1,8 @@
 <?php
 
-$contact = array(
+$order = array(
 	'id'			 => array(
-		'display'	 => 'Contact ID',
+		'display'	 => 'Order ID',
 		'show'		 => array(
 			'list'	 => true,
 			'add'	 => false,
@@ -21,76 +21,88 @@ $contact = array(
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'	 => 'text',
-			'length' => '30',
+			'type'		 => 'text',
+			'length'	 => '8',
+			'required'	 => true
 		)
 	),
-	'status'		 => array(
-		'display'	 => 'Status',
+	'order_type_id'	 => array(
+		'display'	 => 'Order Type',
 		'show'		 => array(
 			'list'	 => true,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'		 => 'select',
-			'transform'	 => array('open' => 'Open', 'quoted' => 'Quoted', 'replied' => 'Replied', 'received_order' => 'Received Order', 'other' => 'Other'),
+			'type'			 => 'select',
+			'select_show'	 => 'name',
+			'table'			 => 'order_type',
+			'required'		 => true,
+		)
+	),
+	'assigned_to'	 => array(
+		'display'	 => 'Assigned To',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'			 => 'select',
+			'select_show'	 => 'CONCAT(first_name," ",last_name)',
+			'table'			 => 'user',
+		)
+	),
+	'date_added'	 => array(
+		'display'	 => 'Date Added',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => false,
+			'edit'	 => false
+		),
+		'form'		 => array(
+			'type'		 => 'date',
+			'default'	 => true,
 		)
 	),
 	'name'			 => array(
 		'display'	 => 'Name',
 		'show'		 => array(
-			'list'	 => true,
+			'list'	 => false,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '30',
-			'required'	 => true,
+			'type'	 => 'text',
+			'length' => 75
 		)
 	),
 	'company'		 => array(
 		'display'	 => 'Company',
 		'show'		 => array(
-			'list'	 => true,
+			'list'	 => false,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '30',
-			'required'	 => true,
-		)
-	),
-	'email'			 => array(
-		'display'	 => 'Email',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'required'	 => true,
-			'type'		 => 'text',
-			'length'	 => '50'
+			'type'	 => 'text',
+			'length' => 100
 		)
 	),
 	'phone'			 => array(
-		'display'	 => 'Phone',
+		'display'	 => 'Phone Number',
 		'show'		 => array(
-			'list'	 => true,
+			'list'	 => false,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '50',
-			'required'	 => true,
+			'type'	 => 'text',
+			'length' => '50'
 		)
 	),
 	'fax'			 => array(
-		'display'	 => 'Fax',
+		'display'	 => 'Fax Number',
 		'show'		 => array(
 			'list'	 => false,
 			'add'	 => true,
@@ -110,7 +122,7 @@ $contact = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '50'
+			'length' => 100
 		)
 	),
 	'address_line_2' => array(
@@ -122,52 +134,11 @@ $contact = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '50'
+			'length' => 100
 		)
 	),
 	'city'			 => array(
 		'display'	 => 'City',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '50',
-			'required'	 => true,
-		)
-	),
-	'state_id'		 => array(
-		'display'	 => 'State',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'			 => 'select',
-			'select_show'	 => 'name',
-			'table'			 => 'state',
-			'required'		 => true,
-		)
-	),
-	'country_id'	 => array(
-		'display'	 => 'Country',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'			 => 'select',
-			'select_show'	 => 'name',
-			'table'			 => 'country',
-			'required'		 => true,
-		)
-	),
-	'zip_code'		 => array(
-		'display'	 => 'Zip',
 		'show'		 => array(
 			'list'	 => false,
 			'add'	 => true,
@@ -175,19 +146,45 @@ $contact = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '30'
+			'length' => '75'
 		)
 	),
-	'comment'		 => array(
-		'display'	 => 'Comment',
+	'state_id'		 => array(
+		'display'	 => 'State',
 		'show'		 => array(
 			'list'	 => false,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'	 => 'textarea',
-			'length' => '255'
+			'type'			 => 'select',
+			'select_show'	 => 'name',
+			'table'			 => 'state'
+		)
+	),
+	'country_id'	 => array(
+		'display'	 => 'Country',
+		'show'		 => array(
+			'list'	 => false,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'			 => 'select',
+			'select_show'	 => 'name',
+			'table'			 => 'country'
+		)
+	),
+	'zip_code'		 => array(
+		'display'	 => 'Zip Code',
+		'show'		 => array(
+			'list'	 => false,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'	 => 'text',
+			'length' => '20'
 		)
 	),
 );

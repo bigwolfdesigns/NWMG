@@ -12,7 +12,10 @@
 				echo $name.'="'.htmlspecialchars($value, ENT_QUOTES).'" ';
 			}
 			echo '/>';
-		}
+		}?>
+		<link type="text/css" rel="stylesheet" title="default" href="/css/bootstrap/bootstrap.css" media="all" />
+		<link type="text/css" rel="stylesheet" title="default" href="/css/bootstrap/bootstrap.css.map" media="all" />
+			<?php
 		//loading CSS
 		foreach($link as $key => $v1){
 			echo '<link ';
@@ -36,11 +39,11 @@
 				->delete('script');
 		?>
 	</head>
-	<body id="kirkco">
-		<div id="page">
+	<body>
+		<div class='container'>
 			<?php
 			echo ll('client')->show_top_menu();
 			echo ll('client')->show_banner();
 			echo ll('client')->show_nav_menu();
 			?>
-			<div id="maincontent">
+			<div id="main-content">

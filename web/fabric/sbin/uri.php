@@ -1,6 +1,6 @@
 <?php
 
-class uri{
+class uri {
 	private $GET				 = array();
 	private $POST				 = array();
 	private $GETnum				 = array(NULL);
@@ -251,7 +251,7 @@ class uri{
 	 * @return    $qry
 	 */
 	private function _process_alias($qry){
-		foreach($this->alias as $key=> $value){
+		foreach($this->alias as $key => $value){
 			$qry = preg_replace('*'.$key.'*', $value, $qry);
 		}
 		return $qry;
@@ -288,9 +288,9 @@ class uri{
 		if($this->canonical_uri === false){
 			$this->canonical_uri = $this->create_uri_from_uri(
 					$this->get_uri(), array(
-				CLASS_KEY	=>$this->get(CLASS_KEY),
-				TASK_KEY	=>$this->get(TASK_KEY),
-				'_EXT'		=>$this->found_extension == ''?$this->extension:$this->found_extension
+				CLASS_KEY	 => $this->get(CLASS_KEY),
+				TASK_KEY	 => $this->get(TASK_KEY),
+				'_EXT'		 => $this->found_extension == ''?$this->extension:$this->found_extension
 					)
 			);
 		}
@@ -394,7 +394,7 @@ class uri{
 						if(isset($GET[$key])){
 							if(!is_array($GET[$key])){
 								if(isset($key2)){
-									$GET[$key] = array($key2=>$GET[$key]);
+									$GET[$key] = array($key2 => $GET[$key]);
 								}else{
 									$GET[$key] = array($GET[$key]);
 								}
@@ -464,7 +464,7 @@ class uri{
 				}
 			}
 		}
-		return array('GET'=>$GET, 'GETnum'=>$GETnum);
+		return array('GET' => $GET, 'GETnum' => $GETnum);
 	}
 	/**
 	 * This function will fill the _GET global variable
@@ -486,7 +486,7 @@ class uri{
 		$this->GETnum	 = $tmp['GETnum'];
 		if(is_array($_GET)){
 			$this->sanitize_get_array();
-			foreach($_GET as $k=> $v){
+			foreach($_GET as $k => $v){
 				$this->GET[$k] = str_replace('%3F', '?', $v);  //This is needed in case there are some manually passed GET info
 			}
 		}
@@ -527,18 +527,18 @@ class uri{
 	public function sanitize_get_array(){
 		// TO-DO: It can be implemented also a sanitation meaning to accept only certain parameters or to exclude others
 		if(is_array($_GET)){
-			foreach($_GET as $k=> $v){
+			foreach($_GET as $k => $v){
 				if(is_string($v) && strstr($v, '?') !== false){
 					$ret = explode('?', $v);
 					if(strstr($ret[1], '=') !== false){
 						$_GET[$k] = $ret[0];
 						if(count($ret) > 1){
-							foreach($ret as $kk=> $vv){
+							foreach($ret as $kk => $vv){
 								if($kk > 0){
 									$rett = array();
 									parse_str($vv, $rett);
 									if(is_array($rett)){
-										foreach($rett as $key=> $val){
+										foreach($rett as $key => $val){
 											$_GET[$key] = $val;
 										}
 									}
@@ -561,7 +561,7 @@ class uri{
 		if(get_magic_quotes_gpc()){
 			if(is_array($string)){
 				$nstring = array();
-				foreach($string as $key=> $value){
+				foreach($string as $key => $value){
 					$nstring[$this->_clean_magic_quotes($key)] = $this->_clean_magic_quotes($value);
 				}
 				$string = $nstring;
@@ -601,7 +601,7 @@ class uri{
 			if(isset($parsed['path'])){
 				$tmp = $this->_parse_path($parsed['path']); //get the GET and GETnum
 				if(!is_null($query) && is_array($query)){
-					foreach($query as $k=> $v){
+					foreach($query as $k => $v){
 						$tmp['GET'][$k] = $v;
 					}
 				}
@@ -610,7 +610,7 @@ class uri{
 			if(isset($parsed['query'])){
 				$qq = array();
 				parse_str($parsed['query'], $qq);
-				foreach($qq as $k=> $v){
+				foreach($qq as $k => $v){
 					if(!isset($query[$k])){
 						$query[$k] = $v;
 					}
@@ -642,7 +642,7 @@ class uri{
 			if(isset($parsed['query'])){
 				$qq = array();
 				parse_str($parsed['query'], $qq);
-				foreach($qq as $k=> $v){
+				foreach($qq as $k => $v){
 					if(!isset($query[$k])){
 						$query[$k] = $v;
 					}
@@ -720,9 +720,9 @@ class uri{
 		}
 		$add_session = false;
 		$qry_added	 = false; //is there already a ? in the query
-		foreach($query as $key=> $item){
+		foreach($query as $key => $item){
 			if(is_array($item)){
-				foreach($item as $kk=> $vv){
+				foreach($item as $kk => $vv){
 					if(is_array($vv) && is_numeric($kk)){
 						$newQry[]	 = urlencode($key).'?'.http_build_query($vv);
 						$qry_added	 = true;

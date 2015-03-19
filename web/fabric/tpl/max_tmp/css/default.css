@@ -1,0 +1,65 @@
+body{
+	background-color:white;
+}
+.logo{
+	float:left
+}
+.clear{
+	clear:both;
+}
+.top-navigation>ul>li {
+	list-style: none;
+	padding: 20px;
+	padding-bottom:5%;
+	float: left;
+	cursor:pointer;
+}
+.top-navigation>ul>li:hover {
+	background-color:#00CCFF;
+	box-shadow: 2px 2px 5px #888888;
+}
+
+.top-navigation>ul>li>a {
+	text-decoration: none;
+	color:black;
+}
+.top-navigation>ul>li:hover a{
+	color:white
+}
+.outer-content{
+	margin:0 auto;
+	width:73%
+}
+.phone-number{
+	margin:2px
+}
+.search-form{
+	margin:2px
+}
+.request-quote-btn{
+	margin:2px
+}
+.banner>img{
+	height:350px;
+	width:100%;
+}
+.banner{
+	padding-top:10px;
+	padding-bottom:10px;
+	background-color:#00CCFF;
+}
+.home-page{
+	padding:10px;
+}
+.home-image{
+	width:100%;
+}
+.home-bucket{
+	text-align:center;
+	padding-bottom: 2%;
+}
+.home-bucket>h3{
+	margin:0;
+	background-color:#00CCFF;
+	color:white;
+}

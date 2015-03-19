@@ -23,14 +23,32 @@ class contacts extends table_prototype {
 			$post = lc('uri')->post();
 			if(isset($post['email']) && !empty($post['email'])){
 				//get customer_id for this email
-				$customer_id		 = ll('customers')->get_id_from_email($post['email']);
-				$post['customer_id'] = $customer_id;
+				$customer_id = ll('customers')->get_id_from_email($post['email']);
+				if($customer_id <= 0){
+					//create new customer from email
+					$customer_id = ll('customers')->register(lc('uri')->is_post('email'));
+				}
+				lc('uri')->set_post('customer_id', $customer_id);
 			}
-			$return = $this->add($post);
+			$return = $this->add('contact');
 			if($return === false){
 				$return		 = array();
 				$return[]	 = "Something went wrong.. Please try again.";
 			}
+		}
+		return $return;
+	}
+	public function add($config = 'contact'){
+		$return = false;
+		if(lc('uri')->is_post()){
+			$return = parent::add($config);
+		}
+		return $return;
+	}
+	public function edit($id, $config = 'contact'){
+		$return = false;
+		if(lc('uri')->is_post() && $id > 0){
+			$return = parent::edit($id, $config);
 		}
 		return $return;
 	}

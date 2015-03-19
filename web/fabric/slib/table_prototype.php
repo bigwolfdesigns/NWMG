@@ -709,11 +709,18 @@ class table_prototype {
 			foreach($_config as $k => $conf){
 				if($k !== 'id'){
 					$required	 = isset($conf['form']['required'])?(is_array($conf['form']['required'])?(intval($conf['form']['required'][$action])):intval($conf['form']['required'])):false;
-					$value		 = trim(lc('uri')->post($k, ''));
+					$use_default = isset($conf['form']['default'])?$conf['form']['default']:false;
+					$default	 = '';
+					if($use_default !== true && $use_default !== false){
+						$default = $use_default;
+					}
+					$value = trim(lc('uri')->post($k, $default));
 					if($required && ($value == '')){
 						$return['errors'][] = "The ".$conf['display']." field is required.";
 					}else{
-						$return['data'][$k] = $this->db->real_escape_string($value);
+						if($use_default !== true){
+							$return['data'][$k] = $this->db->real_escape_string($value);
+						}
 					}
 				}
 			}

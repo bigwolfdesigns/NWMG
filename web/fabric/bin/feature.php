@@ -12,14 +12,24 @@ class feature {
 	 * @return	void
 	 */
 	public function __construct(){
+		$tasks_need_login	 = array('', 'add', 'manage', 'edit', 'delete');
 		ll('client')->set_initial();
-		$task = lc('uri')->get(TASK_KEY, 'manage');
-		if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task))){
-			ll('display')->assign('task', $task);
-			$this->{'web_'.$task}();
+		$is_logged			 = ll('users')->is_logged();
+		$task				 = lc('uri')->get(TASK_KEY, 'manage');
+		if(ll('client')->is_privileged('FEAT')){
+			if(((!in_array($task, $tasks_need_login)) || ((in_array($task, $tasks_need_login) && $is_logged)))){
+				if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task))){
+					ll('display')->assign('task', $task);
+					$this->{'web_'.$task}();
+				}else{
+					ll('display')->assign('task', 'manage');
+					$this->web_manage();
+				}
+			}else{
+				fabric::redirect('/control/login.html', "You must be logged in to view this page.", 5, true);
+			}
 		}else{
-			ll('display')->assign('task', 'manage');
-			$this->web_manage();
+			fabric::redirect('/control.html', "Insufficient Privileges", 5, true);
 		}
 	}
 	public function web_manage(){

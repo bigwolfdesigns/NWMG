@@ -50,6 +50,8 @@ class client extends table_prototype {
 			}
 			$t_task					 = lc('uri')->get(TASK_KEY, 'all');
 			$cfg['client_template']	 = $cfg['template'];
+			$tmp_template			 = ll('cookies')->get('template', '');
+			$cfg['template']	 = ($tmp_template == '')?$cfg['template']:$tmp_template;
 			if(isset($this->config['control_classes'][lc('uri')->get(CLASS_KEY, 'home')][$t_task]) || isset($this->config['control_classes'][lc('uri')->get(CLASS_KEY, 'home')]['all'])){
 				$cfg['template'] = 'control';
 			}
@@ -193,7 +195,7 @@ class client extends table_prototype {
 	}
 	public function show_banner(){
 		$bnumber		 = date('w');
-		$banner_image	 = "/images/banner-i$bnumber.png";
+		$banner_image	 = "/images/image/5";
 		$return			 = ll('display')->grab('banner', array('banner_image' => $banner_image));
 		return $return;
 	}
@@ -243,6 +245,13 @@ class client extends table_prototype {
 	public function get_privileges(){
 		$permissions = array(
 			array(
+				'name'				 => 'Website Navigation',
+				'icon'				 => 'navicon',
+				'uri'				 => lc('uri')->create_uri(array(CLASS_KEY => 'navigation', TASK_KEY => 'nav')),
+				'second_level_links' => array(),
+				'is_privileged'		 => $this->is_privileged('NAV')
+			),
+			array(
 				'name'				 => 'Contact Resource Manager',
 				'icon'				 => 'group',
 				'uri'				 => lc('uri')->create_uri(array(CLASS_KEY => 'crm')),
@@ -276,6 +285,20 @@ class client extends table_prototype {
 				'uri'				 => lc('uri')->create_uri(array(CLASS_KEY => 'image', TASK_KEY => 'manage')),
 				'second_level_links' => array(),
 				'is_privileged'		 => $this->is_privileged('IMG')
+			),
+			array(
+				'name'				 => 'Contact Management',
+				'icon'				 => 'user',
+				'uri'				 => lc('uri')->create_uri(array(CLASS_KEY => 'contact', TASK_KEY => 'manage')),
+				'second_level_links' => array(),
+				'is_privileged'		 => $this->is_privileged('CONT')
+			),
+			array(
+				'name'				 => 'Page Management',
+				'icon'				 => 'file-text',
+				'uri'				 => lc('uri')->create_uri(array(CLASS_KEY => 'page', TASK_KEY => 'manage')),
+				'second_level_links' => array(),
+				'is_privileged'		 => $this->is_privileged('PAGE')
 			)
 		);
 		return $permissions;

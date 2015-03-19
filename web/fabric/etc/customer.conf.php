@@ -1,19 +1,7 @@
 <?php
 
-$contact = array(
-	'id'			 => array(
-		'display'	 => 'Contact ID',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => false,
-			'edit'	 => false
-		),
-		'form'		 => array(
-			'type'	 => 'text',
-			'length' => '8',
-		)
-	),
-	'customer_id'	 => array(
+$customer = array(
+	'id'				 => array(
 		'display'	 => 'Customer ID',
 		'show'		 => array(
 			'list'	 => true,
@@ -21,76 +9,37 @@ $contact = array(
 			'edit'	 => true
 		),
 		'form'		 => array(
+			'type'		 => 'text',
+			'length'	 => '8',
+			'required'	 => true
+		)
+	),
+	'first_name'		 => array(
+		'display'	 => 'First Name',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '30',
+			'length' => '75',
 		)
 	),
-	'status'		 => array(
-		'display'	 => 'Status',
+	'last_name'			 => array(
+		'display'	 => 'Last Name',
 		'show'		 => array(
 			'list'	 => true,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'		 => 'select',
-			'transform'	 => array('open' => 'Open', 'quoted' => 'Quoted', 'replied' => 'Replied', 'received_order' => 'Received Order', 'other' => 'Other'),
+			'type'	 => 'text',
+			'length' => '75',
 		)
 	),
-	'name'			 => array(
-		'display'	 => 'Name',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '30',
-			'required'	 => true,
-		)
-	),
-	'company'		 => array(
+	'company'			 => array(
 		'display'	 => 'Company',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '30',
-			'required'	 => true,
-		)
-	),
-	'email'			 => array(
-		'display'	 => 'Email',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'required'	 => true,
-			'type'		 => 'text',
-			'length'	 => '50'
-		)
-	),
-	'phone'			 => array(
-		'display'	 => 'Phone',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '50',
-			'required'	 => true,
-		)
-	),
-	'fax'			 => array(
-		'display'	 => 'Fax',
 		'show'		 => array(
 			'list'	 => false,
 			'add'	 => true,
@@ -98,10 +47,34 @@ $contact = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '50'
+			'length' => 75
 		)
 	),
-	'address_line_1' => array(
+	'email'				 => array(
+		'display'	 => 'Email',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'	 => 'text',
+			'length' => '150'
+		)
+	),
+	'active'			 => array(
+		'display'	 => 'Active',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'		 => 'select',
+			'transform'	 => array('y' => 'Yes', 'n' => 'No')
+		)
+	),
+	'address_line_1'	 => array(
 		'display'	 => 'Street Address(Line 1)',
 		'show'		 => array(
 			'list'	 => false,
@@ -110,10 +83,10 @@ $contact = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '50'
+			'length' => 100
 		)
 	),
-	'address_line_2' => array(
+	'address_line_2'	 => array(
 		'display'	 => 'Street Address(Line 2)',
 		'show'		 => array(
 			'list'	 => false,
@@ -122,52 +95,11 @@ $contact = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '50'
+			'length' => 100
 		)
 	),
-	'city'			 => array(
+	'city'				 => array(
 		'display'	 => 'City',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'		 => 'text',
-			'length'	 => '50',
-			'required'	 => true,
-		)
-	),
-	'state_id'		 => array(
-		'display'	 => 'State',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'			 => 'select',
-			'select_show'	 => 'name',
-			'table'			 => 'state',
-			'required'		 => true,
-		)
-	),
-	'country_id'	 => array(
-		'display'	 => 'Country',
-		'show'		 => array(
-			'list'	 => true,
-			'add'	 => true,
-			'edit'	 => true
-		),
-		'form'		 => array(
-			'type'			 => 'select',
-			'select_show'	 => 'name',
-			'table'			 => 'country',
-			'required'		 => true,
-		)
-	),
-	'zip_code'		 => array(
-		'display'	 => 'Zip',
 		'show'		 => array(
 			'list'	 => false,
 			'add'	 => true,
@@ -175,19 +107,67 @@ $contact = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '30'
+			'length' => '75'
 		)
 	),
-	'comment'		 => array(
-		'display'	 => 'Comment',
+	'state_id'			 => array(
+		'display'	 => 'State',
 		'show'		 => array(
 			'list'	 => false,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'	 => 'textarea',
-			'length' => '255'
+			'type'			 => 'select',
+			'select_show'	 => 'name',
+			'table'			 => 'state'
+		)
+	),
+	'country_id'		 => array(
+		'display'	 => 'Country',
+		'show'		 => array(
+			'list'	 => false,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'			 => 'select',
+			'select_show'	 => 'name',
+			'table'			 => 'country'
+		)
+	),
+	'zip_code'			 => array(
+		'display'	 => 'Zip Code',
+		'show'		 => array(
+			'list'	 => false,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'	 => 'text',
+			'length' => '20'
+		)
+	),
+	'date_added'		 => array(
+		'display'	 => 'Date Added',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => false,
+			'edit'	 => false
+		),
+		'form'		 => array(
+			'type' => 'date',
+		)
+	),
+	'date_registered'	 => array(
+		'display'	 => 'Date Registered',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type' => 'date',
 		)
 	),
 );

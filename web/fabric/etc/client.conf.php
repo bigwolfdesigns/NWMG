@@ -8,6 +8,9 @@ $client['control_classes']	 = array(
 	'control'	 => array(
 		'all' => true
 	),
+	'contact'	 => array(
+		'all' => true
+	),
 	'image'	 => array(
 		'all' => true
 	),

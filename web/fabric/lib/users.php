@@ -21,7 +21,7 @@ class users extends table_prototype {
 		$this->set_table_name('user')->set_auto_lock_in_shared_mode(true);
 		$this->_fill_user_info();
 	}
-	private function _fill_user_info($user_id = 0, $reset = false){
+	private function _fill_user_info($reset = false, $user_id = 0){
 		if($user_id > 0){
 			$filters = array(
 				array('field' => 'id', 'operator' => '=', 'value' => intval($user_id)),
@@ -144,7 +144,7 @@ class users extends table_prototype {
 			 */
 			if(isset($this->user['id']) && intval(ll('cookies')->get('uid', 0)) <= 0){
 				//$sett			= ll('sessions')->get('_settings');
-				$timeout_cookies = 24 * 3600 * 30; //30 days
+				$timeout_cookies = 24; //24 Hours
 				ll('cookies')->set('uid', intval($this->user['id']), $timeout_cookies); //,$sett['domain']);
 			}
 			if(isset($this->user['emailaddr']) && isset($this->user['id']) && $this->user['id'] == ll('cookies')->get('uid', '')){
@@ -171,6 +171,7 @@ class users extends table_prototype {
 		if(!$force_check_password){
 			$this->logged = $return;
 		}
+//		var_dump($return);
 		return $return;
 	}
 	public function check_login($emailaddr, $pws = '', $user_id = NULL){
@@ -257,5 +258,27 @@ class users extends table_prototype {
 			}
 		}
 		return $return;
+	}
+	private function _delete_login_cookies(){
+		//$keys			= array('cid', 'cu', 'pu', 'h');
+		$sett		 = ll('sessions')->get('_settings');
+		$proxy		 = ll('store')->get_all_proxy_domains();
+		$domain		 = $sett['domain'];
+		$host		 = $sett['host'];
+		$secure_host = $sett['secure_host'];
+		$keys		 = array_keys(ll('cookies')->get_all());
+		$domains	 = array_unique(array_merge($proxy, array($domain, $host, $secure_host, ll('cookies')->get_config('domain'))));
+		foreach($keys as $key){
+			foreach($domains as $dom){
+				if($dom!=''){
+					ll('cookies')->delete($key, $dom);
+					if(substr($dom, 0, 1)!=='.'){
+						ll('cookies')->delete($key, '.'.$dom);
+					}
+				}
+			}
+//			ll('cookies')->delete($key);
+		}
+		return $this;
 	}
 }

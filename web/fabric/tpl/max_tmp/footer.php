@@ -1,14 +1,15 @@
 </div>
 <div id="footer">
+	<div class="copyrightnotice">
+		<span class="copyright">©<?php echo date('Y') ?> </span> Maxson Associates | P.O. Box 2400257 Charlotte, NC 28224<br />
+		<span>800-532-6099 or 704-588-5980</span>
+	</div>
 	<div class="footerlinks">
-		<?php 
+		<?php
 		echo ll('client')->show_footer_links();
 		?>
 		<br>
 		<br>
-	</div>
-	<div class="copyrightnotice">
-		<span class="copyright">©1985-<?php echo  date('Y')?> </span> Kirkco Corporation | PO Box 509 Monroe, NC 28111
 	</div>
 	<div style="float:right;margin-right:5px;">
 		<a href="http://networksmarketinggroup.com" target="_new">

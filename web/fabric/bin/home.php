@@ -15,10 +15,12 @@ class home {
 		ll('client')->set_initial();
 		$task = lc('uri')->get(TASK_KEY, 'home');
 		if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task))){
-			ll('display')->assign('task', $task);
+			ll('display')->assign('task', $task)
+					->set_hide_show('nav', false);
 			$this->{'web_'.$task}();
 		}else{
-			ll('display')->assign('task', 'home');
+			ll('display')->assign('task', 'home')
+					->set_hide_show('nav', false);
 			$this->web_home();
 		}
 	}

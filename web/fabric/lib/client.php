@@ -51,7 +51,7 @@ class client extends table_prototype {
 			$t_task					 = lc('uri')->get(TASK_KEY, 'all');
 			$cfg['client_template']	 = $cfg['template'];
 			$tmp_template			 = ll('cookies')->get('template', '');
-			$cfg['template']	 = ($tmp_template == '')?$cfg['template']:$tmp_template;
+			$cfg['template']		 = ($tmp_template == '')?$cfg['template']:$tmp_template;
 			if(isset($this->config['control_classes'][lc('uri')->get(CLASS_KEY, 'home')][$t_task]) || isset($this->config['control_classes'][lc('uri')->get(CLASS_KEY, 'home')]['all'])){
 				$cfg['template'] = 'control';
 			}
@@ -219,6 +219,7 @@ class client extends table_prototype {
 			array('page' => 'industries_served', 'name' => 'Our Industries'),
 			array('page' => 'privacy_policy', 'name' => 'Privacy Policy'),
 		);
+		$footer_links	 = $this->get_nav_options('footer_links');
 		$return			 = ll('display')->grab('footer_links', array('footer_links' => $footer_links));
 		return $return;
 	}
@@ -228,6 +229,7 @@ class client extends table_prototype {
 		$left_nav					 = array('left_nav' => $this->get('left_nav', array()));
 		$banner_img					 = array('banner_img' => $this->get('banner_img', array()));
 		$footer_links				 = array('footer_links' => $this->get('footer_links', array()));
+		usort($footer_links['footer_links'], array('client', '_sort_top_menus'));
 		$nav_opts					 = array();
 		$nav_opts['top_menu']		 = $top_menu;
 		$nav_opts['left_nav']		 = $left_nav;
@@ -349,7 +351,39 @@ class client extends table_prototype {
 				$this->update()->set('value', json_encode($top_menu_nav_edits_decoded))->where($filters)->do_db();
 				$this->_set('top_menu', $top_menu_nav_edits_decoded);
 			}
-			//really all we need to do is save it in the db.. js has already done everything for us.
+			//do the dirty work
+			$bottom_menu_navs = json_decode(lc('uri')->post('bottom_menu_json', '[]'), true);
+			if(is_array($bottom_menu_navs) && !empty($bottom_menu_navs)){
+				//get the original_bottom_menu_navs
+				$original_bottom_menu_navs = $this->get('bottom_menu', array());
+				if(is_array($original_bottom_menu_navs) && count($original_bottom_menu_navs) > 0){
+					//Basically what's happening here is we're changing the sort ordfer on all existing
+					//bottom menu links by updating what's given back to us in the post.
+					usort($original_bottom_menu_navs, array('client', '_sort_bottom_menus'));
+					foreach($bottom_menu_navs as $k => $sort_order){
+						$original_bottom_menu_navs[$sort_order - 1]['sort'] = $k + 1;
+					}
+					usort($original_bottom_menu_navs, array('client', '_sort_bottom_menus'));
+					$update_bottom_menu	 = json_encode($original_bottom_menu_navs);
+					$filters			 = array();
+					$filters[]			 = array('field' => 'field', 'operator' => '=', 'value' => 'footer_links');
+					$this->update()->set('value', $update_bottom_menu)->where($filters)->do_db();
+					$this->_set('footer_links', $original_bottom_menu_navs);
+				}else{
+					//error there were no original bottom navs... how'd you get here??
+				}
+			}
+			$bottom_menu_nav_edits = lc('uri')->post('edit_bottom_menu_json', NULL);
+			if(!is_null($bottom_menu_nav_edits)){
+				$bottom_menu_nav_edits_decoded = json_decode($bottom_menu_nav_edits, true);
+				foreach(array_keys($bottom_menu_nav_edits_decoded) as $k){
+					$bottom_menu_nav_edits_decoded[$k]['sort'] = ($k + 1);
+				}
+				$filters	 = array();
+				$filters[]	 = array('field' => 'field', 'operator' => '=', 'value' => 'footer_links');
+				$this->update()->set('value', json_encode($bottom_menu_nav_edits_decoded))->where($filters)->do_db();
+				$this->_set('footer_links', $bottom_menu_nav_edits_decoded);
+			}
 		}
 	}
 	public function get($field = '', $default = NULL){

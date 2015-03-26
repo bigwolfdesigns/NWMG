@@ -13,7 +13,7 @@ class request_quote {
 	 */
 	public function __construct(){
 		ll('client')->set_initial();
-		$is_logged	 = ll('users')->is_logged();
+//		$is_logged	 = ll('users')->is_logged();
 		$task		 = lc('uri')->get(TASK_KEY, 'quote');
 //		if(ll('client')->is_privileged('CAT')){
 //			if(((!in_array($task, $tasks_need_login)) || ((in_array($task, $tasks_need_login) && $is_logged)))){

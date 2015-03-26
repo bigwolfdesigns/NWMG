@@ -12,10 +12,11 @@
 				echo $name.'="'.htmlspecialchars($value, ENT_QUOTES).'" ';
 			}
 			echo '/>';
-		}?>
+		}
+		?>
 		<link type="text/css" rel="stylesheet" title="default" href="/css/bootstrap/bootstrap.css" media="all" />
 		<link type="text/css" rel="stylesheet" title="default" href="/css/bootstrap/bootstrap.css.map" media="all" />
-			<?php
+		<?php
 		//loading CSS
 		foreach($link as $key => $v1){
 			echo '<link ';
@@ -43,7 +44,13 @@
 		<div class='container'>
 			<?php
 			echo ll('client')->show_top_menu();
-			echo ll('client')->show_banner();
-			echo ll('client')->show_nav_menu();
+			if(lc('uri')->get(CLASS_KEY, '') == 'home'){
+				echo ll('client')->show_banner();
+			}
 			?>
-			<div id="main-content">
+			<div id="main-content" clas="row">
+				<?php
+				if($this->get_hide_show('nav')){
+					echo ll('client')->show_nav_menu();
+				}
+				

@@ -149,7 +149,7 @@ class display_template extends display {
 					$ret		 = isset($tmp[0])?$tmp[0]:array();
 					$return		 = isset($ret[$select_show])?$ret[$select_show]:$value;
 				}elseif($transform){
-					$return = $transform[$value];
+					$return = isset($transform[$value])?$transform[$value]:'';
 				}
 				break;
 		}

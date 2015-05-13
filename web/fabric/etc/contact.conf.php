@@ -14,15 +14,29 @@ $contact = array(
 		)
 	),
 	'customer_id'	 => array(
-		'display'	 => 'Customer ID',
+		'display'	 => 'Customer',
 		'show'		 => array(
 			'list'	 => true,
 			'add'	 => true,
 			'edit'	 => true
 		),
 		'form'		 => array(
-			'type'	 => 'text',
-			'length' => '30',
+			'type'			 => 'select',
+			'select_show'	 => 'CONCAT(first_name," ",last_name)',
+			'table'			 => 'customer'
+		)
+	),
+	'assigned_to'	 => array(
+		'display'	 => 'Assigned To',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'			 => 'select',
+			'select_show'	 => 'CONCAT(first_name," ",last_name)',
+			'table'			 => 'user'
 		)
 	),
 	'status'		 => array(

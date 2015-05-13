@@ -29,9 +29,10 @@
 	</div>
 	<div id="wrapper">
 		<div class="logo">
-			<h1>Maxson Doors</h1>
+			<h1><?php echo $site_name?></h1>
 			<h2>
-				<strong class="one"></strong>The Door <span>&amp;</span> Loading Dock Equipment Specialist<strong class="two"></strong>
+				<strong class="one"></strong><?php echo $site_tagline?><strong class="two"></strong>
+<!--				<strong class="one"></strong>The Door <span>&amp;</span> Loading Dock Equipment Specialist<strong class="two"></strong>-->
 			</h2>
 		</div>
 		<div class="content">

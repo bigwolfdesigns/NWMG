@@ -34,6 +34,7 @@ class exceptions{
 		$this->_cfg['show_errors']	 = $_cfg['show_errors']; //if show the errors on the page or not
 		$this->_cfg['log_errors']	 = $_cfg['log_errors']; //if log the errors in a file or not
 		$this->_cfg['error_log']	 = $_cfg['error_log']; //file log
+//		var_dump($this->_cfg['error_log']);
 		$this->_cfg['email_errors']	 = $_cfg['email_errors'];
 		$this->_cfg['digest_errors'] = $_cfg['digest_errors']; //send only one email with all the errors
 		$this->_cfg['var_no_log']	 = $_cfg['var_no_log']; //this is an array. Those viarbles will not be logged

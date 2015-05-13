@@ -2,8 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<title><?php echo $title; ?></title>
-		<meta name="description" content="Kirkco Corporation is a distributor of adhesive, sealant and lubricant metering, mixing, and dispensing equipment. Kirkco offers the following product lines: single component systems, two component systems, spraying and coating, hot melt adhesive and cold glue adhesive systems. " />
-		<meta name="keywords" content="adhesive applicator,adhesive applicators,adhesive dispensing equipment,adhesive epoxy,dispensing equipment,hot melt adhesive,hot melt adhesives,hot melt equipment,hot melt glue gun,industrial adhesives,industrial coating,industrial coatings" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<?php
 		//loading meta tags
 		foreach($meta as $key => $v1){
@@ -45,7 +44,7 @@
 			<?php
 			echo ll('client')->show_top_menu();
 			if(lc('uri')->get(CLASS_KEY, '') == 'home'){
-				echo ll('client')->show_banner();
+				echo ll('client')->show_featured_products();
 			}
 			?>
 			<div id="main-content" clas="row">

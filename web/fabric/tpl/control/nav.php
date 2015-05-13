@@ -21,10 +21,11 @@
 					<i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
 				</a>
 				<ul class="dropdown-menu dropdown-user">
-					<li><a href="<?php echo ''; ?>"><i class="fa fa-user fa-fw"></i> User Profile</a>
-					</li>
+<!--					<li>
+						<a href="<?php echo ''; ?>"><i class="fa fa-user fa-fw"></i> User Profile</a>
+					</li>-->
 					<li class="divider"></li>
-					<li><a class="sign-out" href="javascript:void(0);" data-alt="<?php echo '' ?>"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+					<li><a class="sign-out" href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => 'control', TASK_KEY => 'logout')); ?>"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 					</li>
 				</ul>
 			</li>
@@ -71,7 +72,7 @@
 							?>
 							<li>
 								<a href="<?php echo $perm_uri ?>"><i class="fa fa-<?php echo $perm_icon ?> fa-fw"></i> <?php echo $perm_name ?><span class="fa arrow"></span></a>
-								<?php if(is_array($perm_additional_links) && !empty($perm_additional_links)){ ?>
+								<?php if(is_array($perm_additional_links)&&!empty($perm_additional_links)){ ?>
 									<ul class="nav nav-second-level">
 										<?php
 										foreach($perm_additional_links as $perm_add){

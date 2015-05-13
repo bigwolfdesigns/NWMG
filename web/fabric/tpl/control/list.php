@@ -50,7 +50,11 @@
         display:block;
     }
 </style>
-<span class="headingsblue"><?php echo $display_table ?></span>
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header"><?php echo $display_table ?></h1>
+    </div>
+</div>
 <?php
 if(isset($errors) && is_array($errors) && count($errors) > 0){
 	?>

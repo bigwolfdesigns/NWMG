@@ -43,8 +43,8 @@ class contact_us {
 	}
 	public function web_thank_you(){
 		//get the contact-us thank you ecom-page
-		$ecom_page		 = ll('pages')->get_info('contac-us-thank-you');
-		$ecom_content	 = $ecom_page['content'];
+		$ecom_page		 = ll('pages')->get_info('contact-us-thank-you');
+		$ecom_content	 = isset($ecom_page['content'])?$ecom_page['content']:'';
 		ll('display')
 				->assign('ecom_content', $ecom_content)
 				->show('contact/thank_you');

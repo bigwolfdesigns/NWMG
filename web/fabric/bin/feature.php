@@ -39,7 +39,7 @@ class feature {
 		$filters		 = ll('display')->get_filter_filters($config);
 		$features		 = ll('features')->get_all($filters, array(), array(), '', 'feature', array(), array());
 		$feature_count	 = count($features);
-		if($feature_count == 1){
+		if($feature_count == 1 &&lc('uri')->get('filter_submit','')!=''){
 			fabric::redirect('/feature/edit/id/'.$features[0]['id']);
 		}
 		ll('display')

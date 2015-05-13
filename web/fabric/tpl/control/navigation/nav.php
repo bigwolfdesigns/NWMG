@@ -19,7 +19,7 @@ foreach($nav_options as $nav_opts){
 							<div class="panel-body">
 								<div class="panel-group" id="top_menu_link_accordion">
 									<?php
-									if(is_array($nav_opt) && !empty($nav_opt)){
+									if(is_array($nav_opt)&&!empty($nav_opt)){
 										?>
 										<div class="panel panel-default">
 											<div class="panel-heading">
@@ -94,6 +94,22 @@ foreach($nav_options as $nav_opts){
 																<input data-attribute='page' type='text' id='top-menu-edit-page' class='form-control top-menu-edit-attr'/>
 															</div>
 														</div> 
+														<div class="form-group row">
+															<label class="col-md-3">Category:</label>
+															<div class="input-group col-md-9">
+																<select data-attribute='category_id' type='text' id='top-menu-edit-category-id' class='form-control top-menu-edit-attr'>
+																	<option value=''>None</option>
+																	<?php
+																	$categories = ll('categories')->get_select_list();
+																	foreach($categories as $id => $name){
+																		?>
+																		<option value='<?php echo $id ?>'><?php echo $name ?></option>
+																		<?php
+																	}
+																	?>
+																</select>
+															</div>
+														</div> 
 														<span class='form-control top-menu-edit-attr btn btn-danger' data-attribute='delete' id='top-menu-edit-delete'>Delete</span>
 													</div>
 													<input name='edit_top_menu_json' type="hidden" value="[]"/>
@@ -122,7 +138,7 @@ foreach($nav_options as $nav_opts){
 							<div class="panel-body">
 								<div class="panel-group" id="bottom_menu_link_accordion">
 									<?php
-									if(is_array($nav_opt) && !empty($nav_opt)){
+									if(is_array($nav_opt)&&!empty($nav_opt)){
 										?>
 										<div class="panel panel-default">
 											<div class="panel-heading">

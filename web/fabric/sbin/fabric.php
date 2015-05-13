@@ -60,11 +60,11 @@ class fabric {
 			$location	 = $tmps[0];
 			$args		 = $tmps[1];
 		}
-		if(!fabric::cookie_check() || lc('uri')->get(session_name(), '') != ''){
-			if(strpos($location, session_name().'='.session_id()) === false){
-				$location .= ((strpos($location, '?') === false)?'?':'&').session_name().'='.session_id();
-			}
-		}
+//		if(!fabric::cookie_check() || lc('uri')->get(session_name(), '') != ''){
+//			if(strpos($location, session_name().'='.session_id()) === false){
+//				$location .= ((strpos($location, '?') === false)?'?':'&').session_name().'='.session_id();
+//			}
+//		}
 		if($args != ''){
 			$location .= ((strpos($location, '?') === false)?'?':'&').$args;
 		}

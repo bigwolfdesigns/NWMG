@@ -22,7 +22,7 @@ $product = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '30',
+			'length' => '150',
 			'required'=>true,
 		)
 	),
@@ -35,12 +35,25 @@ $product = array(
 		),
 		'form'		 => array(
 			'type'	 => 'text',
-			'length' => '30',
+			'length' => '150',
 			'required'=>true,
 		)
 	),
 	'active'			 => array(
 		'display'	 => 'Active',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'		 => 'select',
+			'transform'	 => array('y' => 'Yes', 'n' => 'No'),
+			'default'=>'y'
+		)
+	),
+	'featured'			 => array(
+		'display'	 => 'Featured Product',
 		'show'		 => array(
 			'list'	 => true,
 			'add'	 => true,

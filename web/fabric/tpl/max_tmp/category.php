@@ -10,7 +10,7 @@
 	<div class="clear"></div>
 	<div class="row">
 		<?php
-		if(is_array($sub_categories) && !empty($sub_categories)){
+		if(is_array($sub_categories)&&!empty($sub_categories)){
 			foreach($sub_categories as $sub_category){
 				$sub_cat_alias		 = $sub_category['alias'];
 				$sub_cat_name		 = $sub_category['name'];
@@ -31,43 +31,40 @@
 								color:white;
 							}
 						</style>
-						<div class="category-image-container tint <?php echo $sub_cat_alias ?>">
-							<a href="<?php echo $url ?>">
-								<img src="<?php echo $sub_cat_image ?>" alt="<?php echo $sub_cat_name ?>" width="200" height="200" class="category-image-left">
-							</a>
-						</div>
+						<a href="<?php echo $url ?>" class="category-image-container tint <?php echo $sub_cat_alias ?>">
+							<img src="<?php echo $sub_cat_image ?>" alt="<?php echo $sub_cat_name ?>" width="200" height="200" class="category-image-left">
+						</a>
 					</div>
 					<div class="col-md-8 category-description">
-						<p><?php echo $sub_cat_description ?></p>
+						<p class='maxson-grey'><?php echo $sub_cat_description ?></p>
 						<a class="pull-right" href="<?php echo $url ?>" style="float: right;">more...</a>
 					</div>
 				</div>
 				<?php
 			}
-		}elseif(is_array($products) && !empty($products)){
-			foreach($products as $product){
-				$product_alias		 = $product['alias'];
-				$product_name		 = $product['name'];
-				$product_image		 = $product['image'];
-				$product_description = $product['description'];
-				$product_url		 = $product['url'];
-				?>
-				<div class="landing" width="210">
-					<span class="landing-header">
-						<a href="<?php echo $product_url ?>"><?php echo $product_name ?></a>
-					</span>
-					<img src="<?php echo $product_image ?>" width="110" height="110" class="landing-image-left">
-					<?php echo $product_description ?>
-					<ul class="nav-links" style="clear:both;">
-						<li>
-							<a href="<?php echo $product_url ?>"><?php echo $product_name ?></a>
-						</li>
-					</ul>
-				</div>
-				<?php
+		}elseif(is_array($products)&&!empty($products)){
+			if(count($products)>1){
+				foreach($products as $product){
+					$product_alias		 = $product['alias'];
+					$product_name		 = $product['name'];
+					$product_image		 = $product['image'];
+					$product_description = $product['description'];
+					$product_url		 = $product['url'];
+					?>
+					<div class="row maxson-grey product-row">
+						<img align='right' src="<?php echo $product_image ?>" width="250" height="150">
+						<p><?php
+							echo $product_description;
+							?></p>
+					</div>
+					<?php
+				}
+			}else{
+				echo $this->grab('product', array('product' => $products[0], 'show_breadcrumbs' => false));
 			}
 		}
 		?>
 	</div>
 	<?php echo $ecom_content; ?>
+	<a class="btn btn-default request-quote-btn" href="/request-quote.html">Request a Quote</a>
 </div>

@@ -99,13 +99,13 @@ class pages extends table_prototype {
 						$attribute_string	 = "";
 						if(is_numeric($id)){
 							//we have an id, no attributes
-							$src = ll('images')->get_image($id, $match);
+							$src = ll('limages')->get_image($id, $match);
 						}else{
 							$attr_matches = array();
 							preg_match('/(.+?){(.+?)}/', $id, $attr_matches);
 							if(isset($attr_matches[1]) && !empty($attr_matches[1])){
 								$id			 = $attr_matches[1];
-								$src		 = ll('images')->get_image($id, $match);
+								$src		 = ll('limages')->get_image($id, $match);
 								$attributes	 = explode(',', $attr_matches[2]);
 								if(is_array($attributes) && !empty($attributes)){
 									foreach($attributes as $attribute){

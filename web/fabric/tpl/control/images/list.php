@@ -37,17 +37,18 @@ if($rows && count($rows) > 0){
 			$id		 = $row['id'];
 			$name	 = $row['name'];
 			?>
-			<div class="col-xs-6 col-md-3">
+			<div class="col-xs-6 col-md-3" style='border: dotted 1px #0087F7;margin:5px'>
 				<?php
 				foreach($_config as $k => $_conf){
 					$v		 = $row[$k];
 					$form	 = isset($_conf['form'])?$_conf['form']:array();
 				}
 				?>
-				<a style='width:150px;height:150px' href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => 'image', TASK_KEY => 'edit', 'id' => $id)); ?>" class="thumbnail">
-					<img src="<?php echo ll('images')->get_image($id) ?>"/>
-					<h2><?php echo $name ?></h2>
+				<a style='width:150px;height:150px;overflow:auto' href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => 'image', TASK_KEY => 'edit', 'id' => $id)); ?>" class="thumbnail">
+					<img src="<?php echo ll('limages')->get_image($id) ?>"/>
 				</a>
+				<p><?php echo $name ?></p>
+				<p class='pull-right'><?php echo $id ?></p>
 			</div>
 		<?php }
 		?></div><?php

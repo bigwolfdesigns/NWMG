@@ -75,7 +75,7 @@ class category {
 		$filters		 = ll('display')->get_filter_filters($config);
 		$categories		 = ll('categories')->get_all($filters, array(), array(), '', 'category', array(), array());
 		$category_count	 = count($categories);
-		if($category_count == 1){
+		if($category_count == 1&&lc('uri')->get('filter_submit', '')!=''){
 			fabric::redirect('/category/edit/id/'.$categories[0]['id']);
 		}
 		ll('display')
@@ -124,12 +124,12 @@ class category {
 			}
 			$form_url		 = lc('uri')->create_auto_uri(array(CLASS_KEY => 'category', TASK_KEY => 'edit', 'id' => $id));
 			$config			 = lc('config')->get_and_unload_config('category');
-			$images			 = ll('images')->get_all();
+			$images			 = ll('limages')->get_all();
 			$category_images = ll('categories')->get_all_images($id);
 			$pages			 = ll('pages')->get_all();
 			$category_pages	 = ll('categories')->get_all_pages($id);
 			foreach($category_images as $k => $category_image){
-				$image_info			 = ll('images')->get_info($category_image['image_id']);
+				$image_info			 = ll('limages')->get_info($category_image['image_id']);
 				$category_images[$k] = array_merge($image_info, $category_images[$k]);
 				foreach($images as $k => $image){
 					if($image['id'] == $category_image['image_id']){

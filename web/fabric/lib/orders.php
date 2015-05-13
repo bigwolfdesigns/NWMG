@@ -14,11 +14,16 @@ class orders extends table_prototype {
 		if(lc('uri')->is_post()){
 			// extract email, check for customer_id,
 			$customer_id = 0;
-			if(lc('uri')->post('email', '') != ''){
-				$customer_id = ll('customers')->get_id_from_email(lc('uri')->post('email', ''));
+			$email		 = lc('uri')->post('email', '');
+			if($email != ''){
+				$customer_id = ll('customers')->get_id_from_email($email);
 				if($customer_id <= 0){
 					//create new customer from email
-					$customer_id = ll('customers')->register(lc('uri')->post('email'));
+					$return		 = array();
+					$return[]	 = "You must enter a valid Email Address.";
+					if(ll('verification')->email($email)){
+						$customer_id = ll('customers')->register($email);
+					}
 				}
 				lc('uri')->set_post('customer_id', $customer_id);
 			}
@@ -55,6 +60,7 @@ class orders extends table_prototype {
 							ll('order_comments')->add_order_comment($return, $params);
 						}
 					}
+					ll('client')->inform('quote', lc('uri')->post());
 				}
 			}else{
 				$return		 = array();

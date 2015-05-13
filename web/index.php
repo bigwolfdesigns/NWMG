@@ -4,6 +4,7 @@
   Based on various other systems
   picking and choosing what Fabrizio Parrella, the creator, likes
  */
+ini_set('error_log','/home/networks/error_log');
 if(!defined('DIRECTORY_SEPARATOR')) define('DIRECTORY_SEPARATOR', strtoupper(substr(PHP_OS, 0, 3) == 'WIN')?'\\':'/');
 define('APPNAME', 'Networks Marketing Group');
 define('APPVERSION', '0.0.1');

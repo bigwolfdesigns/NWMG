@@ -4,7 +4,7 @@
     }
 
 	#overlay {
-		position: fixed; 
+		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
@@ -70,7 +70,7 @@ if(isset($errors) && is_array($errors) && count($errors) > 0){
 		?>
 		<a style='color:red' href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => lc('uri')->get(CLASS_KEY), TASK_KEY => 'delete', 'id' => $id)) ?>" onclick = "return confirm_delete('Are you sure you want to delete this record?')">Delete this Record</a>
 	<?php } ?>
-    <form action="<?php echo $form_url ?>" method="POST" id='edit_form'>  
+    <form action="<?php echo $form_url ?>" method="POST" id='edit_form'>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-6">
@@ -79,11 +79,12 @@ if(isset($errors) && is_array($errors) && count($errors) > 0){
 						if(!isset($v['show'][$action]) || (isset($v['show'][$action]) && $v['show'][$action])){
 							$extras = isset($v['form']['class'])?$v['form']['class']:'';
 							$extras .= ' form-control';
+							$default = isset($v['form']['default'])?$v['form']['default']:'';
 							?>
 							<div class="form-group row">
 								<label class="col-md-3" ><?php echo$v['display']; ?></label>
 								<div class="input-group col-md-9">
-									<?php echo $this->make_form_field($k, $v['form'], $this->get_form_value($k, isset($info[$k])?$info[$k]:''), $action, $extras); ?>
+									<?php echo $this->make_form_field($k, $v['form'], $this->get_form_value($k, isset($info[$k])?$info[$k]:$default), $action, $extras); ?>
 								</div>
 							</div>
 							<?php

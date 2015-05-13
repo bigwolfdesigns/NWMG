@@ -14,7 +14,7 @@ class home {
 	public function __construct(){
 		ll('client')->set_initial();
 		$task = lc('uri')->get(TASK_KEY, 'home');
-		if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task))){
+		if(method_exists($this, 'web_'.$task)&&is_callable(array($this, 'web_'.$task))){
 			ll('display')->assign('task', $task)
 					->set_hide_show('nav', false);
 			$this->{'web_'.$task}();
@@ -33,6 +33,8 @@ class home {
 		ll('display')
 				->assign('categories', $categories)
 				->assign('coming_soon_url', $coming_soon_url)
+				->assign('site_name', ll('client')->get('name', 'This Website'))
+				->assign('site_tagline', ll('client')->get('tagline', 'test'))
 				->show('home');
 	}
 	public function web_coming_soon(){
@@ -40,6 +42,8 @@ class home {
 		$message		 = ll('client')->coming_soon();
 		ll('display')
 				->assign('coming_soon_url', $coming_soon_url)
+				->assign('site_name', ll('client')->get('name', 'This Website'))
+				->assign('site_tagline', ll('client')->get('tagline', 'test'))
 				->assign('message', $message)
 				->show('home');
 	}
@@ -50,5 +54,14 @@ class home {
 				->assign('categories', $categories)
 				->assign('coming_soon_url', $coming_soon_url)
 				->show('home_temp');
+	}
+	public function web_template(){
+		$tpl = lc('uri')->get('tpl', 'max_tmp');
+		ll('cookies')->set('template', $tpl, 60*60*24);
+		fabric::redirect('/');
+	}
+	public function web_remove_template(){
+		ll('cookies')->delete('template');
+		fabric::redirect('/');
 	}
 }

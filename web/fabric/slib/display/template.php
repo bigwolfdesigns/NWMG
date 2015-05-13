@@ -86,7 +86,7 @@ class display_template extends display {
 			$id_col			 = 'id';
 			$name_col		 = $form['select_show'];
 			$extra_fields	 = array($id_col, $name_col);
-			$values			 = ll('table_prototype')->get_all(array(), array(), array(), '', $table_name, array(), $extra_fields);
+			$values			 = ll('table_prototype')->get_raw(array(), array(), array(), '', $table_name, array(), $extra_fields);
 			if(is_array($values)){
 				foreach($values as $val){
 					$ret .= "<option value='$val[$id_col]'".(($value == $val[$id_col])?'SELECTED':'').">$val[$name_col]</option>";
@@ -117,16 +117,16 @@ class display_template extends display {
 	public function make_filter_field($key, $form = array(), $value = ''){
 		$form_type	 = isset($form['type'])?$form['type']:'';
 		$length		 = isset($form['length'])?$form['length']:8;
-		$ret		 = "<input type='text' value='$value' name='$key' maxlength='$length' size='16'/>";
+		$ret		 = "<input class='form-control' type='text' value='$value' name='$key' maxlength='$length' size='16'/>";
 		switch($form_type){
 			case'select':
-				$ret	 = $this->create_select($key, $value, $form);
+				$ret	 = $this->create_select($key, $value, $form, 'form-control');
 				break;
 			case 'date':
 				$lt_val	 = lc('uri')->get($key.'lt', '');
 				$gt_val	 = lc('uri')->get($key.'gt', '');
-				$ret	 = "<input type='text' value='$gt_val' name='$key"."gt' maxlength='$length' size='16'/>";
-				$ret .= "<input type='text' value='$lt_val' name='$key"."lt' maxlength='$length' size='16'/>";
+				$ret	 = "<input class='form-control' type='text' value='$gt_val' name='$key"."gt' maxlength='$length' size='16'/>";
+				$ret .= "<input class='form-control' type='text' value='$lt_val' name='$key"."lt' maxlength='$length' size='16'/>";
 			default:
 				break;
 		}
@@ -172,7 +172,7 @@ class display_template extends display {
 					$ret = "<span>$value</span>";
 					break;
 				case'textarea':
-					$ret = "<textarea $class name='$key' $length_display style='max-width:438px;max-height:100px; height:50px;width:215px'>$value</textarea>";
+					$ret = "<textarea $class name='$key' style='max-width:438px;max-height:100px; height:50px;width:215px'>$value</textarea>";
 					break;
 				case'image':
 					$ret = "<input class='need_file_path'  type='text' $class value='$value' name='$key' $length_display size='$size'/>";

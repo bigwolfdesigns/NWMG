@@ -121,13 +121,13 @@ class table_prototype {
 	}
 	public function join($join){
 		if(is_array($join)){
-			if(isset($join['on']) && !isset($join['how'])){
+			if(isset($join['on'])&&!isset($join['how'])){
 				$join['how'] = $join['on'];
 			}
-			if(isset($join['join']) && !isset($join['direction'])){
+			if(isset($join['join'])&&!isset($join['direction'])){
 				$join['direction'] = $join['join'];
 			}
-			if(isset($join['table']) && isset($join['how'])){
+			if(isset($join['table'])&&isset($join['how'])){
 				if(!isset($join['direction'])) $join['direction']		 = 'left';
 				$this->dodb['join'][]	 = array('table' => $join['table'], 'how' => $join['how'], 'direction' => $join['direction']);
 			} else{
@@ -161,7 +161,7 @@ class table_prototype {
 		return $this;
 	}
 	public function where($where = array()){
-		if(isset($where['field']) || isset($where['name'])){
+		if(isset($where['field'])||isset($where['name'])){
 			$this->dodb['where'][] = $where;
 		}else{
 			$this->dodb['where'] = $where;
@@ -174,23 +174,23 @@ class table_prototype {
 	}
 	public function on_duplicate_key_update($on_dup_update){
 //		ON DUPLICATE KEY UPDATE
-		if(is_array($on_dup_update) && count($on_dup_update) > 0){
+		if(is_array($on_dup_update)&&count($on_dup_update)>0){
 			$this->dodb['on_dup_update'] = $on_dup_update;
 		}
 		return $this;
 	}
 	public function group($group = array()){
 		if(is_array($group)){
-			if(!empty($group) && $group != array('')){
+			if(!empty($group)&&$group!=array('')){
 				$this->dodb['group'] = $group;
 			}
-		}elseif($group != ''){
+		}elseif($group!=''){
 			$this->dodb['group'][] = $group;
 		}
 		return $this;
 	}
 	public function having($having = array()){
-		if(isset($having['field']) || isset($having['name'])){
+		if(isset($having['field'])||isset($having['name'])){
 			$this->dodb['having'][] = $having;
 		}else{
 			$this->dodb['having'] = $having;
@@ -199,16 +199,16 @@ class table_prototype {
 	}
 	public function order($order = array()){
 		if(is_array($order)){
-			if(!empty($order) && $order != array('')){
+			if(!empty($order)&&$order!=array('')){
 				$this->dodb['order'] = $order;
 			}
-		}elseif($order != ''){
+		}elseif($order!=''){
 			$this->dodb['order'][] = $order;
 		}
 		return $this;
 	}
 	public function limit($limit = ''){
-		if($limit == ''){
+		if($limit==''){
 			$this->dodb['limit'] = '';
 		}else{
 			$this->dodb['limit'] = 'LIMIT '.$limit;
@@ -223,7 +223,7 @@ class table_prototype {
 		$qry = '';
 		$nl	 = "\n";
 		$tab = "\t";
-		if($this->dodb['what'] == 'EXECUTE'){
+		if($this->dodb['what']=='EXECUTE'){
 			$qry .= $nl.'EXECUTE '.$this->dodb['prepare'].' USING ';
 			if(is_array($this->dodb['using'])){
 				$qry .= implode(',', $this->dodb['using']);
@@ -232,40 +232,42 @@ class table_prototype {
 			}
 			$qry .= ';';
 		}else{
-			if($this->dodb['prepare'] != ''){
+			if($this->dodb['prepare']!=''){
 				$qry .= $nl.'PREPARE '.$this->dodb['prepare'].' FROM ';
 			}
 			$qry .= $nl.$this->dodb['what'];
-			if(substr($this->dodb['what'], 0, 6) == 'INSERT' || substr($this->dodb['what'], 0, 7) == 'REPLACE'){
+			if(substr($this->dodb['what'], 0, 6)=='INSERT'||substr($this->dodb['what'], 0, 7)=='REPLACE'){
 				$qry .= $nl.'INTO ';
-			}elseif(substr($this->dodb['what'], 0, 6) == 'SELECT'){
+			}elseif(substr($this->dodb['what'], 0, 6)=='SELECT'){
 				$sql_cache = isset($this->dodb['sql_cache'])?$this->dodb['sql_cache']:false; //true, false, 'once', 'no'
-				if($sql_cache === 'no'){
+				if($sql_cache==='no'){
 					$qry .= ' SQL_NO_CACHE';
-				}elseif($sql_cache !== false){
+				}elseif($sql_cache!==false){
 					$qry .= ' SQL_CACHE';
 				}
-				if(is_array($this->dodb['fields']) && !empty($this->dodb['fields'])){
+				if(is_array($this->dodb['fields'])&&!empty($this->dodb['fields'])){
 					$qry .= ' '.implode(','.$nl.$tab, $this->dodb['fields']);
 				}else{
 					$qry .= ' * ';
 				}
 				$qry .= $nl.'FROM ';
-			}elseif($this->dodb['what'] == 'DELETE'){
+			}elseif($this->dodb['what']=='DELETE'){
 				$qry .= $nl.'FROM ';
-			}elseif($this->dodb['what'] == 'UPDATE'){
+			}elseif($this->dodb['what']=='UPDATE'){
 				
 			}
-			if($this->dodb['ttable'] != ''){
+			if(is_array($this->dodb['ttable'])){
+				$qry .= ' `'.implode('`,`', $this->dodb['ttable']).'` ';
+			}elseif($this->dodb['ttable']!=''){
 				$qry .= ' `'.$this->dodb['ttable'].'` ';
 			}else{
 				$qry .= ' `'.$this->dodb['table'].'` ';
 			}
-			if($this->dodb['table_alias'] != ''){
+			if($this->dodb['table_alias']!=''){
 				$qry .= ' AS `'.$this->dodb['table_alias'].'` ';
 			}
-			if($this->dodb['join'] != array()){
-				if(substr($this->dodb['what'], 0, 6) == 'SELECT' || $this->dodb['what'] == 'DELETE'){
+			if($this->dodb['join']!=array()){
+				if(substr($this->dodb['what'], 0, 6)=='SELECT'||$this->dodb['what']=='DELETE'){
 					foreach($this->dodb['join'] as $join){
 						switch($join['direction']){
 							case 'right':
@@ -281,11 +283,11 @@ class table_prototype {
 					}
 				}
 			}
-			if($this->dodb['what'] == 'UPDATE' || substr($this->dodb['what'], 0, 6) == 'INSERT' || substr($this->dodb['what'], 0, 7) == 'REPLACE'){
+			if($this->dodb['what']=='UPDATE'||substr($this->dodb['what'], 0, 6)=='INSERT'||substr($this->dodb['what'], 0, 7)=='REPLACE'){
 				$aqry = array();
 				foreach($this->dodb['set'] as $field => $value){
 //					if($value[1] || ((string)(float)$value[0] === (string)$value[0])){	//MySQL function or number
-					if($value[1] || (is_numeric($value[0]) && !is_string($value[0]))){ //MySQL function or number
+					if($value[1]||(is_numeric($value[0])&&!is_string($value[0]))){ //MySQL function or number
 						$valueDb = $value[0];
 					}else{
 						$valueDb = '"'.$this->db->real_escape_string($value[0]).'"';
@@ -295,28 +297,28 @@ class table_prototype {
 				}
 				$qry .= $nl.'SET '.implode(','.$nl.$tab, $aqry);
 			}
-			if($this->dodb['what'] == 'UPDATE' || substr($this->dodb['what'], 0, 6) == 'SELECT' || $this->dodb['what'] == 'DELETE'){
-				if($this->dodb['where'] == array() && ($this->dodb['what'] == 'UPDATE' || $this->dodb['what'] == 'DELETE')){
+			if($this->dodb['what']=='UPDATE'||substr($this->dodb['what'], 0, 6)=='SELECT'||$this->dodb['what']=='DELETE'){
+				if($this->dodb['where']==array()&&($this->dodb['what']=='UPDATE'||$this->dodb['what']=='DELETE')){
 					$this->where(array('field' => 'id', 'operator' => '=', 'value' => $this->get('id')));
 				}
 
-				if($this->dodb['where'] != array()){
+				if($this->dodb['where']!=array()){
 					$qry .= $nl.'WHERE '.$this->_process_where($this->dodb['where']);
 				}
 			}
-			if(substr($this->dodb['what'], 0, 6) != 'INSERT' || substr($this->dodb['what'], 0, 7) != 'REPLACE'){
-				if(isset($this->dodb['group']) && is_array($this->dodb['group']) && !empty($this->dodb['group'])){
+			if(substr($this->dodb['what'], 0, 6)!='INSERT'||substr($this->dodb['what'], 0, 7)!='REPLACE'){
+				if(isset($this->dodb['group'])&&is_array($this->dodb['group'])&&!empty($this->dodb['group'])){
 					$qry .= $nl.'GROUP BY '.implode(','.$nl.$tab, $this->dodb['group']);
 				}
-				if($this->dodb['having'] != array()){
+				if($this->dodb['having']!=array()){
 					$qry .= $nl.'HAVING '.$this->_process_where($this->dodb['having']);
 				}
-				if(isset($this->dodb['order']) && is_array($this->dodb['order']) && !empty($this->dodb['order'])){
+				if(isset($this->dodb['order'])&&is_array($this->dodb['order'])&&!empty($this->dodb['order'])){
 					$qry .= $nl.'ORDER BY '.implode(','.$nl.$tab, $this->dodb['order']);
 				}
 			}
 			$qry .= $this->dodb['postfix'];
-			if(substr($this->dodb['what'], 0, 6) == 'INSERT' && is_array($this->dodb['on_dup_update']) && count($this->dodb['on_dup_update']) > 0){
+			if(substr($this->dodb['what'], 0, 6)=='INSERT'&&is_array($this->dodb['on_dup_update'])&&count($this->dodb['on_dup_update'])>0){
 				$qry .= $nl.'ON DUPLICATE KEY UPDATE ';
 				foreach($this->dodb['on_dup_update'] as $k => $v){
 					$qry .= ' `'.$k.'`='.$v.', ';
@@ -324,11 +326,11 @@ class table_prototype {
 				$qry = substr(trim($qry), 0, -1);
 			}
 
-			if(substr($this->dodb['what'], 0, 6) != 'INSERT' && isset($this->dodb['limit'])){
+			if(substr($this->dodb['what'], 0, 6)!='INSERT'&&isset($this->dodb['limit'])){
 				$qry .= $nl.$this->dodb['limit'];
 			}
 			if($this->auto_lock_in_shared_mode){
-				if(substr($this->dodb['what'], 0, 6) == 'SELECT'){
+				if(substr($this->dodb['what'], 0, 6)=='SELECT'){
 					$qry .= ' LOCK IN SHARE MODE';
 				}
 			}
@@ -344,11 +346,11 @@ class table_prototype {
 		$read				 = isset($this->dodb['read_db'])?$this->dodb['read_db']:false; //true, false, 'once'
 		$sql_cache			 = isset($this->dodb['sql_cache'])?$this->dodb['sql_cache']:false; //true, false, 'once'
 		$this->last_query	 = $qry;
-		$this->last_result	 = $this->db->query($qry, $read !== false);
-		if($read == 'once'){
+		$this->last_result	 = $this->db->query($qry, $read!==false);
+		if($read=='once'){
 			$this->set_read(false);
 		}
-		if($sql_cache == 'once' || $sql_cache == 'no'){
+		if($sql_cache=='once'||$sql_cache=='no'){
 			$this->set_sql_cache(false);
 		}
 
@@ -388,30 +390,30 @@ class table_prototype {
 		if(is_array($where)){
 //			$this->current = $this->select()->from($from)->fields()->where($where)->limit(1)->do_db()->db->fetch_array($this->last_result);
 			$this->_get_info($where, $from);
-		}elseif($from != ''){
+		}elseif($from!=''){
 			$this->_get_info($where, $from);
-		}elseif($where != NULL){
+		}elseif($where!=NULL){
 			$this->_get_info($where, $from);
-		}elseif(!isset($this->current['id']) || $this->current['id'] <= 0){
+		}elseif(!isset($this->current['id'])||$this->current['id']<=0){
 			
 		}
 		return $this;
 	}
 	public function get($field = '', $default = NULL){
 		$return = false;
-		if($field == '' || is_array($field)){
+		if($field==''||is_array($field)){
 			$return = $this->get_info();
 		}elseif(!isset($this->current[$field])){
 			$this->get_info(); //to do in case the user override some functions
 		}
-		if($return === false){
+		if($return===false){
 			$return = isset($this->current[$field])?$this->current[$field]:$default;
 		}
 		return $return;
 	}
 	public function get_info($where = NULL, $from = NULL){
 		if(!is_null($where)) $this->get_record($where, $from);
-		return isset($this->current) && is_array($this->current)?$this->current:array();
+		return isset($this->current)&&is_array($this->current)?$this->current:array();
 	}
 	/**
 	 * this function returns all the records
@@ -437,7 +439,7 @@ class table_prototype {
 	 */
 	public function get_all($where = array(), $orders = array(), $group = array(), $limit = '', $from = '', $join = array(), $xtrfields = array(), $extra_select = '', $having = array()){
 		$records = array();
-		$fields	 = (is_array($xtrfields) && !empty($xtrfields))?$xtrfields:'`'.($from != ''?$from:$this->dodb['table']).'`.`id`';
+		$fields	 = (is_array($xtrfields)&&!empty($xtrfields))?$xtrfields:'`'.($from!=''?$from:$this->dodb['table']).'`.`id`';
 		$this->select($extra_select)->fields($fields)->from($from)->qjoin($join)->where($where)->group($group)->having($having)->order($orders)->limit($limit)->do_db();
 		$tmps	 = $this->last_result;
 		$db		 = $this->db;
@@ -445,8 +447,8 @@ class table_prototype {
 			if(is_array($fields)){
 				$retrieve_fields = array();
 				foreach($fields as $field){
-					if(strrpos($field, '.') > 0){
-						$value = $record[substr($field, strrpos($field, '.') + 1)];
+					if(strrpos($field, '.')>0){
+						$value = $record[substr($field, strrpos($field, '.')+1)];
 					}else{
 						$value = $record[$field];
 					}
@@ -471,16 +473,16 @@ class table_prototype {
 	 * @param string extra_count Extra Text To Append to the COUNT(
 	 */
 	public function get_count($where = array(), $group = array(), $from = '', $join = array(), $xtrfields = array(), $extra_select = '', $extra_count = ''){
-		if(strtoupper($extra_select) == 'DISTINCT'){
+		if(strtoupper($extra_select)=='DISTINCT'){
 			$extra_count = $extra_select;
 		}
-		if(is_array($xtrfields) && !empty($xtrfields)){
-			if(count($xtrfields) == 1 && isset($xtrfields[0])){
+		if(is_array($xtrfields)&&!empty($xtrfields)){
+			if(count($xtrfields)==1&&isset($xtrfields[0])){
 				$field = 'COUNT('.$extra_count.' '.$xtrfields[0].') tot';
 			}else{
 				$field = 'COUNT('.$extra_count.' '.'CONCAT('.implode(',', $xtrfields).')) tot';
 			}
-		}elseif(is_string($xtrfields) && $xtrfields != ''){
+		}elseif(is_string($xtrfields)&&$xtrfields!=''){
 			$field = 'COUNT('.$extra_count.' '.$xtrfields.') tot';
 		}else{
 			$field = 'COUNT(*) tot';
@@ -525,7 +527,7 @@ class table_prototype {
 	 */
 	public function get_ids($where = array(), $orders = array(), $group = array(), $limit = '', $from = '', $join = array(), $xtrfields = array(), $extra_select = '', $having = array()){
 		$records = array();
-		$this->select($extra_select)->fields(array_merge($xtrfields, array('`'.($from != ''?$from:$this->dodb['table']).'`.`id`')))->from($from)->qjoin($join)->where($where)->group($group)->having($having)->order($orders)->limit($limit)->do_db();
+		$this->select($extra_select)->fields(array_merge($xtrfields, array('`'.($from!=''?$from:$this->dodb['table']).'`.`id`')))->from($from)->qjoin($join)->where($where)->group($group)->having($having)->order($orders)->limit($limit)->do_db();
 		$tmps	 = $this->last_result;
 		$db		 = $this->db;
 		while($record	 = $db->fetch_array($tmps)){
@@ -546,22 +548,22 @@ class table_prototype {
 		$tab			 = "\t";
 		if(!is_array($where)){
 			$where = array(array('field' => 'id', 'operator' => '=', 'value' => $where));
-		}elseif(count($where) == 1 && isset($where[0]) && !is_array($where[0])){
+		}elseif(count($where)==1&&isset($where[0])&&!is_array($where[0])){
 			$where = array(array('field' => 'id', 'operator' => '=', 'value' => $where[0]));
 		}elseif(!is_array($where)){
 			$return = 1;
 		}
-		if($return === false){
+		if($return===false){
 			$recur++;
 			$appends = array();
 			foreach($where as $fil){
-				if(!isset($fil['field']) && !isset($fil['name'])){
+				if(!isset($fil['field'])&&!isset($fil['name'])){
 					$appends[] = $nl.str_repeat($tab, $recur).$this->_process_where($fil);
 				}else{
 					$appends[] = $nl.str_repeat($tab, $recur).$this->_process_where_single($fil);
 				}
 			}
-			$append	 = $nl.str_repeat($tab, $recur - 1).'('.implode($recur == 1?' AND ':' OR ', $appends).$nl.str_repeat($tab, $recur - 1).')';
+			$append	 = $nl.str_repeat($tab, $recur-1).'('.implode($recur==1?' AND ':' OR ', $appends).$nl.str_repeat($tab, $recur-1).')';
 			$recur--;
 			$return	 = $append;
 		}
@@ -569,7 +571,7 @@ class table_prototype {
 	}
 	private function _process_where_single($where){
 		//need to allow the field name to be called also "name" and not only "field"
-		if((!isset($where['field']) && !isset($where['name'])) || !isset($where['operator'])){
+		if((!isset($where['field'])&&!isset($where['name']))||!isset($where['operator'])){
 			$return = '';
 		}else{
 			if(!isset($where['value'])){
@@ -641,7 +643,7 @@ class table_prototype {
 				case 'IS NOT':
 					//exception to _escape_field because the "NULL" will not need to be escaped
 					//so the default behavior is to NOT escape
-					if($escape === false || $escape === 'auto'){
+					if($escape===false||$escape==='auto'){
 						$value = $where['value'];
 					}else{
 						$value = '"'.$this->db->real_escape_string($where['value']).'"';
@@ -672,14 +674,14 @@ class table_prototype {
 					$value	 = $this->_escape_field($where['value'], $escape);
 					break;
 			}
-			if($return == ''){
+			if($return==''){
 				$return = $field.' '.$operator.' '.$value.' '.$extra;
 			}
 		}
 		return $return;
 	}
 	private function _escape_field($value, $escape){
-		if($escape === false || ($escape === 'auto' && is_numeric($value) && !is_string($value))){
+		if($escape===false||($escape==='auto'&&is_numeric($value)&&!is_string($value))){
 			//nothing to do
 		}else{
 			$value = '"'.$this->db->real_escape_string($value).'"';
@@ -707,18 +709,18 @@ class table_prototype {
 		if(!is_null($config)){
 			$_config = lc('config')->get_and_unload_config($config);
 			foreach($_config as $k => $conf){
-				if($k !== 'id'){
+				if($k!=='id'){
 					$required	 = isset($conf['form']['required'])?(is_array($conf['form']['required'])?(intval($conf['form']['required'][$action])):intval($conf['form']['required'])):false;
 					$use_default = isset($conf['form']['default'])?$conf['form']['default']:false;
 					$default	 = '';
-					if($use_default !== true && $use_default !== false){
+					if($use_default!==true&&$use_default!==false){
 						$default = $use_default;
 					}
 					$value = trim(lc('uri')->post($k, $default));
-					if($required && ($value == '')){
+					if($required&&($value=='')){
 						$return['errors'][] = "The ".$conf['display']." field is required.";
 					}else{
-						if($use_default !== true){
+						if($use_default!==true){
 							$return['data'][$k] = $this->db->real_escape_string($value);
 						}
 					}
@@ -733,7 +735,7 @@ class table_prototype {
 		$return		 = $data_errors['errors'];
 		if(empty($return)){
 			$return = false;
-			if(is_array($data) && !empty($data)){
+			if(is_array($data)&&!empty($data)){
 				foreach($data as $key => $value){
 					$this->set($key, $value);
 				}
@@ -745,16 +747,16 @@ class table_prototype {
 	}
 	public function edit($id, $config = NULL){
 		$return = false;
-		if($id > 0){
+		if($id>0){
 			$data_errors = $this->_get_data('edit', $config);
 			$data		 = $data_errors['data'];
 			$return		 = $data_errors['errors'];
 			if(empty($return)){
 				$return	 = false;
 				$return	 = $this->edit_related($config, $id);
-				if(is_array($data) && !empty($data)){
+				if(is_array($data)&&!empty($data)){
 					foreach($data as $key => $value){
-						if($key == 'content' && $config == 'page'){
+						if($key=='content'&&$config=='page'){
 							$value = str_ireplace('\r\n', '', $value);
 						}
 						$this->set($key, $value);
@@ -779,13 +781,13 @@ class table_prototype {
 				$data = array();
 			}
 			$doit = true;
-			if(empty($data) && !empty($existing_data)){
+			if(empty($data)&&!empty($existing_data)){
 				$filters	 = array();
 				$filters[]	 = array('field' => $table.'_id', 'operator' => '=', 'value' => $id);
 				$this->delete()->from($related)->where($filters)->run();
 				//delete all data for this table
 				$doit		 = false;
-			}elseif(empty($data) && !empty($existing_data)){
+			}elseif(empty($data)&&!empty($existing_data)){
 				$doit = false;
 			}
 			if($doit){
@@ -807,7 +809,7 @@ class table_prototype {
 				foreach($new_data as $data){
 					foreach($data as $k => $value){
 						foreach($existing_data as $existing){
-							if($existing[$field_name] == $value){
+							if($existing[$field_name]==$value){
 								unset($new_data[$field_name][$k]);
 							}
 						}
@@ -833,7 +835,7 @@ class table_prototype {
 		if(is_array($tt_post)){
 			$fields = $this->get_fields();
 			foreach($tt_post as $key => $value){
-				if(isset($fields[$key]) && is_array($value) && $fields[$key]['post'] == true){
+				if(isset($fields[$key])&&is_array($value)&&$fields[$key]['post']==true){
 					foreach($value as $id => $vv){
 						$filters = array(array('field' => 'id', 'operator' => '=', 'value' => $id));
 						$ret	 = $this->update()->set($key, $vv)->where($filters)->do_db();
@@ -854,7 +856,7 @@ class table_prototype {
 		if(is_null($id)){
 			$id = $this->get('id', 0);
 		}
-		if(!empty($id) && !empty($field)){
+		if(!empty($id)&&!empty($field)){
 			if(!is_array($id)){
 				$filters	 = array();
 				$filters[]	 = array('field' => 'id', 'operator' => '=', 'value' => $id);
@@ -874,12 +876,12 @@ class table_prototype {
 		return $this->last_query;
 	}
 	private function debug($msg){
-		if($this->level_debug !== false){
+		if($this->level_debug!==false){
 			echo $msg.'::'.$this->db->get_total_time()."<br />\n";
 		}
 	}
 	public function __get($name){
-		if($name == 'db'){
+		if($name=='db'){
 			$return = $this->db;
 		}else{
 			$return = NULL;

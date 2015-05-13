@@ -39,7 +39,7 @@ class page {
 		$filters	 = ll('display')->get_filter_filters($config);
 		$pages		 = ll('pages')->get_all($filters, array(), array(), '', 'page', array(), array());
 		$page_count	 = count($pages);
-		if($page_count == 1){
+		if($page_count == 1&&lc('uri')->get('filter_submit', '')!=''){
 			fabric::redirect('/page/edit/id/'.$pages[0]['id']);
 		}
 		ll('display')

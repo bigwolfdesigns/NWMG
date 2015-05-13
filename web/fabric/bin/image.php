@@ -36,7 +36,7 @@ class image {
 		$config		 = array(); //lc('config')->get_and_unload_config('image');
 		$filters	 = ll('display')->get_filter_filters($config);
 		$limit		 = ll('display')->get_limit();
-		$images		 = ll('images')->get_all($filters, array(), array(), $limit, 'image', array(), array());
+		$images		 = ll('limages')->get_all($filters, array(), array(), $limit, 'image', array(), array());
 		$image_count = count($images);
 		if($image_count == 1){
 //			fabric::redirect('/image/edit/id/'.$images[0]['id']);
@@ -49,7 +49,7 @@ class image {
 				->show('images/list');
 	}
 	public function web_upload(){
-		$return = ll('images')->upload_file();
+		$return = ll('limages')->upload_file();
 	}
 	public function web_add(){
 		//for now add using the uplaod feature on the list page
@@ -59,9 +59,9 @@ class image {
 		return false; //we dont want to edit until we can also change the file around which will be a little later
 		$id = intval(lc('uri')->get('id', 0));
 		if($id > 0){
-			$return		 = ll('images')->edit($id);
+			$return		 = ll('limages')->edit($id);
 			$errors		 = array();
-			$img_info	 = ll('images')->get_info($id);
+			$img_info	 = ll('limages')->get_info($id);
 			if($return !== false){
 				if(is_array($return)){
 					//we have errors
@@ -89,7 +89,7 @@ class image {
 		$return	 = false;
 		if($id > 0){
 			if(lc('uri')->post('delete', NULL) != ''){
-				$return = ll('images')->remove($id);
+				$return = ll('limages')->remove($id);
 			}
 		}
 		ll('display')

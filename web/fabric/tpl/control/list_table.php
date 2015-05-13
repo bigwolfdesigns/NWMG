@@ -42,8 +42,8 @@
 							}
 						}
 						?>
-					<td align="center"><a href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => $class_key, TASK_KEY => 'edit', 'id' => $id)) ?>"><img src="/images/edit.gif"/></a></td>
-					<td align="center"><a href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => $class_key, TASK_KEY => 'delete', 'id' => $id)) ?>" onclick = "return confirm_delete('Are you sure you want to delete this record?')"><img src="/images/delete.gif"/></a></td>
+					<td align="center"><a href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => $class_key, TASK_KEY => 'edit', 'id' => $id)) ?>"><i class="fa fa-edit fa-fw"></i></a></td>
+					<td align="center"><a href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => $class_key, TASK_KEY => 'delete', 'id' => $id)) ?>" onclick = "return confirm_delete('Are you sure you want to delete this record?')"><i style="color:red" class="fa fa-exclamation-circle fa-fw"></i></a></td>
 				</tr>
 				<?php
 			}

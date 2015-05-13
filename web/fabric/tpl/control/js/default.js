@@ -8,6 +8,7 @@ $(function (){
 
 	$('.top-menu-edit-attr').keyup(attribute_change_function);
 	$('.top-menu-edit-attr').click(attribute_change_function);
+	$('.top-menu-edit-attr').change(attribute_change_function);
 });
 var update_top_menu_links=function (event, ui){
 	$("input[name='top_menu_json']").val(JSON.stringify($(this).sortable('toArray')));
@@ -25,7 +26,8 @@ var nav_edit_function=function (){
 		info={
 			page: '',
 			name: 'Link',
-			sort: (sort_id+1)
+			sort: (sort_id+1),
+			category_id: ''
 		};
 		top_menu_links_json[sort_id]=info;
 		// now that the array is populated create the new "Button"
@@ -36,6 +38,7 @@ var nav_edit_function=function (){
 	//slide down the editing fields
 	$('#top-menu-edit-name').data('id', sort_id).val(info.name);
 	$('#top-menu-edit-page').data('id', sort_id).val(info.page);
+	$('#top-menu-edit-category-id').data('id', sort_id).val(info.category_id);
 	$('#top-menu-edit-delete').data('id', sort_id);
 //	$('#top-menu-edit-container').css('display', 'block');
 };

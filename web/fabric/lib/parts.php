@@ -10,6 +10,6 @@ class parts extends table_prototype {
 		$this->set_table_name('part')->set_auto_lock_in_shared_mode(true);
 	}
 	public function get_image($part_id){
-		return ll('images')->get_image($part_id, 'part');
+		return ll('limages')->get_image($part_id, 'part');
 	}
 }

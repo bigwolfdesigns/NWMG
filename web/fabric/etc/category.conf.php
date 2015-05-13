@@ -61,7 +61,8 @@ $category = array(
 		),
 		'form'		 => array(
 			'type'		 => 'select',
-			'transform'	 => array('y' => 'Yes', 'n' => 'No')
+			'transform'	 => array('y' => 'Yes', 'n' => 'No'),
+			'default'	 => 'y'
 		)
 	),
 	'title'			 => array(
@@ -122,6 +123,18 @@ $category = array(
 		'form'		 => array(
 			'type'		 => 'select',
 			'transform'	 => array('y' => 'Yes', 'n' => 'No')
+		)
+	),
+	'sort_order'	 => array(
+		'display'	 => 'Sort Order',
+		'show'		 => array(
+			'list'	 => true,
+			'add'	 => true,
+			'edit'	 => true
+		),
+		'form'		 => array(
+			'type'	 => 'int',
+			'length' => '8'
 		)
 	),
 );

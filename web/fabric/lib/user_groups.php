@@ -23,7 +23,6 @@ class user_groups extends table_prototype {
 		if($user_id){
 			//get _all_groups associated with this user
 			$filters	 = array();
-			$filters[]	 = array();
 			$groups		 = $this->get_raw($filters);
 			if(is_array($groups)){
 				$return = $groups;

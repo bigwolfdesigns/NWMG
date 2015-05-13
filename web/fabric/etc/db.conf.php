@@ -21,13 +21,24 @@ $db['server']		 = 'localhost';
 switch(strtolower(isset($_SERVER['SERVER_NAME'])?$_SERVER['SERVER_NAME']:'')){
 	case'www.maxsondoors.com':
 	case'maxsondoors.com':
+	case'maxsondoors.networksmarketinggroup.com':
 		$db['database']	 = 'networks_maxsondoors';
+		break;
+	case 'aviation':
+	case 'aviation.networksmarketinggroup.com':
+		$db['database']	 = 'networks_aviation';
+		break;
+	case'www.wlkco.com':
+	case'wlkco.com':
+	case'wlkco.networksmarketinggroup.com':
+		$db['database']	 = 'networks_wlkco';
 		break;
 	case '': //scripts
 	case 'kirkcocorp':
-	case 'kirkcocorp.bigwolfdesigns.com':
+	case 'kirkcocorp.networksmarketinggroup.com':
 	default:
 		$db['database']	 = 'networks_kirkcocorp';
+		break;
 }
 $db['user']		 = 'networks_website';
 $db['password']	 = 'Q6Vh08E7buwd';

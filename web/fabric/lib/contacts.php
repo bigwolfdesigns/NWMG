@@ -31,6 +31,7 @@ class contacts extends table_prototype {
 				lc('uri')->set_post('customer_id', $customer_id);
 			}
 			$return = $this->add('contact');
+			ll('client')->inform('contact', lc('uri')->post());
 			if($return === false){
 				$return		 = array();
 				$return[]	 = "Something went wrong.. Please try again.";

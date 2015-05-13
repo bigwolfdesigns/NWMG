@@ -13,7 +13,7 @@ class products extends table_prototype {
 	public function get_info($where = NULL, $from = NULL){
 		$_info	 = parent::get_info($where, $from);
 		$return	 = array();
-		if(is_array($_info) && !empty($_info)){
+		if(is_array($_info)&&!empty($_info)){
 			$product_id			 = $_info['id'];
 			$_info['image']		 = $this->get_image($product_id);
 			$_info['components'] = $this->get_components($product_id);
@@ -23,10 +23,10 @@ class products extends table_prototype {
 		return $return;
 	}
 	public function get_image($product_id){
-		return ll('images')->get_image($product_id, 'product');
+		return ll('limages')->get_image($product_id, 'product');
 	}
 	public function get_all_images($product_id){
-		return ll('images')->get_images($product_id, 'product');
+		return ll('limages')->get_images($product_id, 'product');
 	}
 	public function get_all_pages($product_id){
 		return ll('pages')->get_all_pages($product_id, 'product');
@@ -39,7 +39,7 @@ class products extends table_prototype {
 		$filters[]	 = array('field' => 'alias', 'operator' => '=', 'value' => $alias);
 		$ret		 = $this->get_info($filters);
 		$return		 = false;
-		if(is_array($ret) && isset($ret['id'])){
+		if(is_array($ret)&&isset($ret['id'])){
 			$return = $ret['id'];
 		}
 		return $return;
@@ -49,7 +49,7 @@ class products extends table_prototype {
 		$filters[]	 = array('field' => 'category_id', 'operator' => '=', 'value' => $cat_id);
 		$products	 = $this->get_raw($filters);
 		$return		 = array();
-		if(is_array($products) && !empty($products)){
+		if(is_array($products)&&!empty($products)){
 			foreach($products as $k => $product){
 				//get the main image
 				//get the features for this product
@@ -72,7 +72,7 @@ class products extends table_prototype {
 		$fields		 = array('feature.*');
 		$features	 = $this->get_raw($filters, array(), array(), '', 'product_feature', $join, $fields);
 		$return		 = array();
-		if(is_array($features) && !empty($features)){
+		if(is_array($features)&&!empty($features)){
 			foreach($features as $k => $feature){
 				$features[$k]['value'] = ll('features')->parse_value($feature['value']);
 			}
@@ -89,7 +89,7 @@ class products extends table_prototype {
 		$fields		 = array('component.*');
 		$components	 = $this->get_raw($filters, array(), array(), '', 'component_product', $join, $fields);
 		$return		 = array();
-		if(is_array($components) && !empty($components)){
+		if(is_array($components)&&!empty($components)){
 			foreach($components as $k => $component){
 				$component_id			 = $component['id'];
 				$component[$k]['image']	 = ll('components')->get_image($component_id);
@@ -129,7 +129,7 @@ class products extends table_prototype {
 	}
 	public function edit($id, $config = 'product'){
 		$return = false;
-		if(lc('uri')->is_post() && $id > 0){
+		if(lc('uri')->is_post()&&$id>0){
 			$return = parent::edit($id, $config);
 		}
 		return $return;
@@ -142,6 +142,26 @@ class products extends table_prototype {
 		$return		 = array();
 		foreach($products as $product){
 			$return[$product['id']] = $product['name'];
+		}
+		return $return;
+	}
+	public function get_featured_products(){
+		$filters	 = array();
+		$filters[]	 = array('field' => 'featured', 'operator' => '=', 'value' => 'y');
+		$order		 = array('alias');
+		$products	 = $this->get_raw($filters, $order);
+		$return		 = array();
+		if(is_array($products)&&!empty($products)){
+			foreach($products as $k => $product){
+				//get the main image
+				//get the features for this product
+				$product_id				 = $product['id'];
+				$products[$k]['image']	 = $this->get_image($product_id);
+//				$products[$k]['components']	 = $this->get_components($product_id);
+//				$products[$k]['features']	 = $this->get_features($product_id);
+				$products[$k]['url']	 = $this->get_url($product_id);
+			}
+			$return = $products;
 		}
 		return $return;
 	}

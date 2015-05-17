@@ -71,27 +71,29 @@ class categories extends table_prototype {
 		if($cat_id>0){
 			$category_info = ll('categories')->get_info($cat_id);
 			//we have to form the array backwards and then reverse it
-			if(empty($bread_crumbs)){
-				$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
-			}else{
-				$parent_alias = $category_info['alias'];
-				foreach($bread_crumbs as $k => $bread_crumb){
-					$bread_crumbs[$k]['url'] = '/'.$parent_alias.$bread_crumb['url'];
-				}
-				$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
-			}
-			while(isset($category_info['parent_id'])&&$category_info['parent_id']>0){
-				$parent_id		 = $category_info['parent_id'];
-				$category_info	 = ll('categories')->get_info($category_info['parent_id']);
-				if($category_info['parent_id']==$parent_id){
-					$category_info = array();
-				}
-				if(!empty($category_info)){
+			if(!empty($category_info)){
+				if(empty($bread_crumbs)){
+					$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
+				}else{
 					$parent_alias = $category_info['alias'];
 					foreach($bread_crumbs as $k => $bread_crumb){
 						$bread_crumbs[$k]['url'] = '/'.$parent_alias.$bread_crumb['url'];
 					}
 					$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
+				}
+				while(isset($category_info['parent_id'])&&$category_info['parent_id']>0){
+					$parent_id		 = $category_info['parent_id'];
+					$category_info	 = ll('categories')->get_info($category_info['parent_id']);
+					if($category_info['parent_id']==$parent_id){
+						$category_info = array();
+					}
+					if(!empty($category_info)){
+						$parent_alias = $category_info['alias'];
+						foreach($bread_crumbs as $k => $bread_crumb){
+							$bread_crumbs[$k]['url'] = '/'.$parent_alias.$bread_crumb['url'];
+						}
+						$bread_crumbs[] = array('name' => $category_info['name'], 'url' => '/'.$category_info['alias'].'.html');
+					}
 				}
 			}
 		}

@@ -7,7 +7,7 @@ class display_template extends display {
 		'head'	 => true,
 		'foot'	 => true,
 	);
-	private $default_page_rows	 = 50;
+	private $default_page_rows	 = 12;
 	public function __construct(){
 		parent::$instance = &$this;
 	}

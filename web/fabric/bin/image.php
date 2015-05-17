@@ -17,8 +17,8 @@ class image {
 		$is_logged			 = ll('users')->is_logged();
 		$task				 = lc('uri')->get(TASK_KEY, 'manage');
 		if(ll('client')->is_privileged('IMG')){
-			if(((!in_array($task, $tasks_need_login)) || ((in_array($task, $tasks_need_login) && $is_logged)))){
-				if(method_exists($this, 'web_'.$task) && is_callable(array($this, 'web_'.$task))){
+			if(((!in_array($task, $tasks_need_login))||((in_array($task, $tasks_need_login)&&$is_logged)))){
+				if(method_exists($this, 'web_'.$task)&&is_callable(array($this, 'web_'.$task))){
 					ll('display')->assign('task', $task);
 					$this->{'web_'.$task}();
 				}else{
@@ -37,8 +37,8 @@ class image {
 		$filters	 = ll('display')->get_filter_filters($config);
 		$limit		 = ll('display')->get_limit();
 		$images		 = ll('limages')->get_all($filters, array(), array(), $limit, 'image', array(), array());
-		$image_count = count($images);
-		if($image_count == 1){
+		$image_count = ll('limages')->get_count($filters, array(), 'image');
+		if($image_count==1){
 //			fabric::redirect('/image/edit/id/'.$images[0]['id']);
 		}
 		ll('display')
@@ -58,11 +58,11 @@ class image {
 	public function web_edit(){
 		return false; //we dont want to edit until we can also change the file around which will be a little later
 		$id = intval(lc('uri')->get('id', 0));
-		if($id > 0){
+		if($id>0){
 			$return		 = ll('limages')->edit($id);
 			$errors		 = array();
 			$img_info	 = ll('limages')->get_info($id);
-			if($return !== false){
+			if($return!==false){
 				if(is_array($return)){
 					//we have errors
 					$errors = $return;
@@ -87,8 +87,8 @@ class image {
 	public function web_delete(){
 		$id		 = intval(lc('uri')->get('id', 0));
 		$return	 = false;
-		if($id > 0){
-			if(lc('uri')->post('delete', NULL) != ''){
+		if($id>0){
+			if(lc('uri')->post('delete', NULL)!=''){
 				$return = ll('limages')->remove($id);
 			}
 		}

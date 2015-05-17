@@ -44,9 +44,11 @@ if($rows && count($rows) > 0){
 					$form	 = isset($_conf['form'])?$_conf['form']:array();
 				}
 				?>
-				<a style='width:150px;height:150px;overflow:auto' href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => 'image', TASK_KEY => 'edit', 'id' => $id)); ?>" class="thumbnail">
+				<a style='width:150px;height:150px;overflow:auto;float:left' href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => 'image', TASK_KEY => 'edit', 'id' => $id)); ?>" class="thumbnail">
 					<img src="<?php echo ll('limages')->get_image($id) ?>"/>
 				</a>
+				<a style="color: red;float:right;" href="<?php echo lc('uri')->create_auto_uri(array(CLASS_KEY => 'image', TASK_KEY => 'delete', 'id' => $id)); ?>" >DELETE</a>
+				<div class="clearfix"></div>
 				<p style="min-height:3em"><?php echo $name ?></p>
 				<p class='pull-right'><?php echo $id ?></p>
 			</div>

@@ -35,10 +35,10 @@ class limages extends table_prototype {
 			$filters[] = array('field' => 'main', 'operator' => '=', 'value' => 'y');
 		}
 		$_info = $lib->get_info($filters);
-		if(is_array($_info) && !empty($_info) || $skip_initial_query){
-			$image_id	 = $skip_initial_query?$id:$_info['id'];
+		if(is_array($_info)&&!empty($_info)||$skip_initial_query){
+			$image_id = $skip_initial_query?$id:$_info['id'];
 		}
-		$return		 = "/images/$type/$id.png";
+		$return = "/images/$type/$id.png";
 		return $return;
 	}
 	public function get_images($id, $type = 'image'){
@@ -63,7 +63,7 @@ class limages extends table_prototype {
 		$filters	 = array();
 		$filters[]	 = array('field' => $field, 'operator' => '=', 'value' => $id);
 		$return		 = $lib->get_all($filters);
-		if(!is_array($return) || empty($return)){
+		if(!is_array($return)||empty($return)){
 			$return = array();
 		}
 		return $return;
@@ -82,7 +82,7 @@ class limages extends table_prototype {
 				}
 			}
 			$temp		 = ll('client')->get('client_template', '');
-			$template	 = $temp == ''?'':($temp.'/');
+			$template	 = $temp==''?'':($temp.'/');
 			$path		 = IMAGEPATH.$template.'image/';
 			if(!is_dir($path)){
 				mkdir($path, 0775, true);
@@ -103,7 +103,7 @@ class limages extends table_prototype {
 						'active' => 'y'
 					);
 					$id		 = ll('limages')->insert()->set($insert)->run()->get_last_inserted_id();
-					if($id > 0){
+					if($id>0){
 						$return[] = "The file $basename has been uploaded. The file id is: $id";
 					}else{
 						$return[] = "The file $basename has been uploaded, but not updated in the database.. Please contact your Administrator for assistance.";
@@ -118,5 +118,18 @@ class limages extends table_prototype {
 		}else{
 			return $return;
 		}
+	}
+	public function remove($id){
+		$image_info	 = $this->get_info($id);
+		$ret		 = parent::remove($id);
+		if($ret){
+			//delete the image also
+			$temp		 = ll('client')->get('client_template', '');
+			$template	 = $temp==''?'':($temp.'/');
+			$path		 = IMAGEPATH.$template.'image/';
+			$base_name	 = $image_info['name'].'.'.$image_info['ext'];
+			$ret		 = ll('files')->unlink($path.$base_name);
+		}
+		return $ret;
 	}
 }
